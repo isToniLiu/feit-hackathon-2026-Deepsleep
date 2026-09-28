@@ -1,6 +1,14 @@
 # feit-hackathon-2026-Deepsleep
 
-2026 FEIT Hackathon Festival —— 队伍 **Deepsleep**
+## 📁 文件说明
+
+| 文件 | 用途 |
+|---|---|
+| `README.md` | 入口：环境准备、Kickoff Prompt、日常开发循环、项目概况摘要 |
+| `PRD.md` | 完整产品需求（问题陈述、用户调研、竞品分析、MVP范围、Walking Skeleton、数据/API候选清单、决策记录） |
+| `AGENTS.md` | 技术栈、命名规范、统一响应格式、AI协作规则、任务完成后自查清单——跨工具通用约定，Codex CLI等会自动读取 |
+| `CLAUDE.md` | 一句话指针，指向 `AGENTS.md`（给Claude Code看，内容不重复维护） |
+| `HANDBOOK.md` | 团队协作流程（赛事日程、角色分工、Git规范、导师资源、风险预案、提交物清单） |
 
 ---
 
