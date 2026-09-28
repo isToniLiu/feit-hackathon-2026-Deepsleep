@@ -4,6 +4,25 @@
 
 ---
 
+## 🔧 环境准备（第一次开始开发前，只需要做一次）
+
+> AI编程工具（Claude Code / Cursor / Codex CLI 等）读的是**本地文件**，不是网页链接，
+> 所以必须先把仓库克隆到本地、让AI工具打开这个本地文件夹，它才能自动读到下面的README/AGENTS.md。
+
+1. 克隆仓库到本地：
+   ```
+   git clone https://github.com/isToniLiu/feit-hackathon-2026-Deepsleep.git
+   ```
+2. 用你的AI编程工具（Claude Code / Cursor / Codex CLI 等）打开克隆下来的这个文件夹，把它设为项目根目录/工作目录
+3. 确认AI工具能看到文件夹里的 `README.md`、`AGENTS.md`（可以直接问它"列一下这个项目根目录有哪些文件"）
+4. 都确认没问题后，再执行下面的 Kickoff Prompt
+
+> 如果你用的是没有本地文件读取能力的网页版AI聊天工具（没有克隆这一步、纯粹网页对话），
+> 把仓库链接换成对应文件的raw链接直接贴给它，比如：
+> `https://raw.githubusercontent.com/isToniLiu/feit-hackathon-2026-Deepsleep/main/AGENTS.md`
+
+---
+
 ## 🚀 开发前必读：Kickoff Prompt
 
 > 每次开始一个新的AI开发session（尤其是第一次、或换了新的对话/新的AI工具）时，先把下面这段话粘贴给你的AI Agent，
