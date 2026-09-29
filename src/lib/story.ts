@@ -24,6 +24,17 @@ export interface Mentor {
   line: string;
 }
 
+export type RoleId = "priya" | "marcus" | "aiko";
+
+export interface RoleProfile {
+  mentorId: string;
+  type: string;
+  label: string;
+  description: string;
+  focus: string;
+  route: string;
+}
+
 export interface Story {
   dashboard: {
     greeting: string;
@@ -33,6 +44,7 @@ export interface Story {
     primerContent: { title: string; body: string; cta: string };
   };
   briefing: { title: string; body: string; cta: string };
+  roles: Record<RoleId, RoleProfile>;
   mentors: Record<string, Mentor>;
   chapters: Chapter[];
   referenceCard: Record<string, string[]>;
@@ -73,6 +85,10 @@ export type IncidentStatus = "monitoring" | "containment-risk" | "containment-pr
 
 export function getMentor(mentorId: string): Mentor {
   return story.mentors[mentorId];
+}
+
+export function getRole(roleId: RoleId): RoleProfile {
+  return story.roles[roleId];
 }
 
 export function getChapter(chapterId: string): Chapter | undefined {

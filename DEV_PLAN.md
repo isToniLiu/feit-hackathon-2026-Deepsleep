@@ -29,7 +29,7 @@
 
 ### 阶段 1 · 页面状态机 + 静态screens（对应原P1任务包）✅ 已完成
 - [x] 建立页面级状态机（`useState`，`src/app/page.tsx` + `src/lib/flow.ts`），节点顺序：
-  `dashboard → briefing → mentor1 → chapter1 → mentor2 → chapter2 → mentor3 → chapter3 → debrief`
+  `roleSelect → dashboard → briefing → selectedChapter → debrief`；角色入口分别对应 Priya / Marcus / Aiko 的调查视角，完成后可重开体验另外两个入口。
   （"30秒速览"入门环节先跳过，属于Could项）
 - [x] 每个节点先做一个**最简单的占位screen**（标题+一段文字+"下一步"按钮，`src/components/screens/`），能把整条流程从头点到尾
 - [x] 顶部倒计时组件先做静态展示（`src/components/TopBar.tsx`，不接暂停逻辑，暂停机制是Should项，后面再加）
@@ -71,6 +71,9 @@
 > 危险选择会让后续节点显示"containment at risk"，安全选择则推进"containment in progress"。
 > 同时补齐篇章②的可调查文件场景，并新增应用内浏览器层（标签页、地址栏、前进/后退、多个可访问的内部页面）；每个有意义的动作都会写入聊天并解释作用，最终AI反馈还会读取本篇章的行动历史。已完成并通过 lint / production build。
 
+> 🔍 **后续改造④（角色入口）**：吸收队友 `cyberinvestigator-prototype` 分支的角色选择思路，但不把角色做成简单难度选择。
+> 开场先让玩家选择 Priya（身份验证调查）、Marcus（可疑文件响应）或 Aiko（账号流程核查），三者进入同一份 IR-247 事故档案的不同系统、线索和调查任务；一次只体验一个岗位视角，结局页提示重开案件探索其余入口。这样既保留角色差异，也避免首次体验被三个决策点拉得过长。
+
 ---
 
 ### 阶段 3 · AI后端骨架 + 兜底机制（对应原P4任务包）✅ 已完成
@@ -102,8 +105,8 @@
 
 ### 阶段 5 · 结局页（补齐P1剩余部分）✅ 已完成
 - [x] 安全决策力评分：安全选项计数/已回答篇章数 → 百分比（`DebriefScreen.tsx`），环形图用纯CSS conic-gradient实现，不追求美观
-- [x] 关键决策回顾列表：展示篇章①③各自的选择、理由、AI反馈（数据来自`page.tsx`新增的`answers`状态，由`DecisionScreen`的`onNext`回传`DecisionResult`）
-- [x] "今晚体验过的岗位"小结：直接列出story.mentors里的三位（Priya/Marcus/Aiko），不是占位文字
+- [x] 关键决策回顾列表：展示当前角色篇章的选择、理由、AI反馈（数据来自`page.tsx`新增的`answers`状态，由`DecisionScreen`的`onNext`回传`DecisionResult`）
+- [x] 角色入口与重玩提示：展示当前岗位视角，并邀请玩家重开案件体验另外两个入口
 
 **验收点** = **PRD.md 里定义的"Must达标"检查点**：
 > 篇章①③完整可玩通 + AI真实调用LLM生成理由反馈 + 结局页评分与回顾
@@ -159,5 +162,6 @@ Could项（AI驱动视觉高亮、多剧情场景、历史记录）暂不排期�
 - 角色分工模式：由5人并行任务包 → **改为单机顺序开发**（本文件替代HANDBOOK.md 3.1节当前生效）
 - 正式代码：**阶段0/1/2/3/4/5全部完成**，三个篇章均已接入场景化决策，Must的3项验收点全部达标；另已完成篇章②、🤔求助选项、ARG沉浸层（案件档案、证据链、跨篇章事故状态）和动作叙事链（动作记录、作用解释、行动历史AI反馈）
 - 用的是 **OpenAI API（gpt-4o-mini）**，Key存在本地`.env.local`（不提交仓库）
+- 已接入角色选择页：三个岗位进入同一事故的不同调查视角，每次只推进所选篇章，结局页保留重玩入口
 - 接下来按"2. Must达标之后"的顺序开始补Should项（篇章②、🤔求助选项、🧭参考卡、🫁暂停机制等）
 - 队友并行工作：前端视觉素材收集中（不阻塞本计划的阶段0-5，UI换皮见DEV_PLAN第3节）

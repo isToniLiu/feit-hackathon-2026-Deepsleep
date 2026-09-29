@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { TopBar } from "@/components/TopBar";
+import { RoleSelectScreen } from "@/components/screens/RoleSelectScreen";
 import { DashboardScreen } from "@/components/screens/DashboardScreen";
 import { BriefingScreen } from "@/components/screens/BriefingScreen";
 import { MentorScreen } from "@/components/screens/MentorScreen";
@@ -14,18 +15,28 @@ import {
   type DecisionResult,
   type EvidenceItem,
   type IncidentStatus,
+  type RoleId,
 } from "@/lib/story";
 
-const flow = buildFlow();
-
 export default function Home() {
+  const [selectedRole, setSelectedRole] = useState<RoleId | null>(null);
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, DecisionResult>>({});
   const [evidence, setEvidence] = useState<EvidenceItem[]>([]);
   const [incidentStatus, setIncidentStatus] = useState<IncidentStatus>("monitoring");
+  const flow = buildFlow(selectedRole ?? undefined);
 
   const goNext = () => setIndex((i) => Math.min(i + 1, flow.length - 1));
   const restart = () => {
+    setSelectedRole(null);
+    setAnswers({});
+    setEvidence([]);
+    setIncidentStatus("monitoring");
+    setIndex(0);
+  };
+
+  const selectRole = (roleId: RoleId) => {
+    setSelectedRole(roleId);
     setAnswers({});
     setEvidence([]);
     setIncidentStatus("monitoring");
@@ -52,11 +63,12 @@ export default function Home() {
     goNext();
   }
 
-  const node = flow[index];
+  const node = flow[index] ?? flow[0];
 
   return (
     <div className="flex flex-1 flex-col">
       <TopBar evidence={evidence} incidentStatus={incidentStatus} />
+      {node.type === "roleSelect" && <RoleSelectScreen onSelect={selectRole} />}
       {node.type === "dashboard" && <DashboardScreen onNext={goNext} />}
       {node.type === "briefing" && <BriefingScreen onNext={goNext} />}
       {node.type === "mentor" && (
@@ -79,7 +91,12 @@ export default function Home() {
           );
         })()}
       {node.type === "debrief" && (
-        <DebriefScreen answers={answers} evidence={evidence} onRestart={restart} />
+        <DebriefScreen
+          answers={answers}
+          evidence={evidence}
+          selectedRole={selectedRole}
+          onRestart={restart}
+        />
       )}
     </div>
   );

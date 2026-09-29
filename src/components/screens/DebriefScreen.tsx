@@ -1,9 +1,11 @@
 import {
   getChapter,
   getMentor,
+  getRole,
   story,
   type DecisionResult,
   type EvidenceItem,
+  type RoleId,
 } from "@/lib/story";
 
 // 阶段5：评分环用纯CSS conic-gradient实现，先求"功能对"，不追求美观（后续UI素材到位再换皮）。
@@ -17,13 +19,16 @@ function scoreTier(percent: number): "high" | "mid" | "low" {
 export function DebriefScreen({
   answers,
   evidence,
+  selectedRole,
   onRestart,
 }: {
   answers: Record<string, DecisionResult>;
   evidence: EvidenceItem[];
+  selectedRole: RoleId | null;
   onRestart: () => void;
 }) {
   const { debrief, mentors } = story;
+  const role = selectedRole ? getRole(selectedRole) : null;
 
   const answeredChapterIds = story.chapters
     .map((c) => c.id)
@@ -54,10 +59,18 @@ export function DebriefScreen({
       </div>
       <p className="max-w-md text-zinc-600">{debrief.flavorByTier[tier]}</p>
 
+      {role && (
+        <div className="w-full max-w-md rounded border border-zinc-200 bg-zinc-50 p-4 text-left">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-zinc-400">Your investigation entry point</p>
+          <p className="mt-2 font-medium">{role.type} · {role.label}</p>
+          <p className="mt-1 text-sm text-zinc-500">你从这个岗位看到的是 IR-247 的一个切面。换一个角色，会进入同一事故的另一组系统和证据。</p>
+        </div>
+      )}
+
       <div className="w-full max-w-md text-left">
         <h2 className="mb-2 font-semibold">{debrief.evidenceTitle}</h2>
         <p className="mb-3 text-sm text-zinc-500">
-          你在现场留下了 {evidence.length} 条记录。它们把三个看似独立的请求串成了同一条调查线索。
+          你在现场留下了 {evidence.length} 条记录。它们把当前岗位看到的异常固定进 IR-247 案件档案。
         </p>
         <ol className="flex flex-col gap-2">
           {evidence.map((item, index) => (
@@ -107,7 +120,7 @@ export function DebriefScreen({
       </div>
 
       <div className="w-full max-w-md text-left">
-        <h2 className="mb-2 font-semibold">{debrief.rolesRecapTitle}</h2>
+        <h2 className="mb-2 font-semibold">{role ? "其他可调查的岗位视角" : debrief.rolesRecapTitle}</h2>
         <ul className="flex flex-col gap-1 text-sm text-zinc-600">
           {Object.keys(mentors).map((mentorId) => {
             const mentor = getMentor(mentorId);
