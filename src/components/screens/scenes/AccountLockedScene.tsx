@@ -13,9 +13,11 @@ const pages: BrowserPage[] = [
 export function AccountLockedScene({
   onChoose,
   onAction,
+  choiceLocked,
 }: {
   onChoose: (choice: "safe" | "danger" | "unsure") => void;
   onAction: (action: SceneAction) => void;
+  choiceLocked: boolean;
 }) {
   const [tipShown, setTipShown] = useState(false);
   const [linkNoticed, setLinkNoticed] = useState(false);
@@ -127,10 +129,11 @@ export function AccountLockedScene({
 
               <button
                 onClick={() => onChoose("danger")}
+                disabled={choiceLocked}
                 onMouseEnter={noticeVerifyLink}
                 onFocus={noticeVerifyLink}
                 onMouseLeave={() => setHoveringVerify(false)}
-                className="w-full rounded bg-red-600 py-2 text-sm font-medium text-white hover:bg-red-500"
+                className="w-full rounded bg-red-600 py-2 text-sm font-medium text-white hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 Verify &amp; Unlock Now
               </button>
@@ -147,13 +150,15 @@ export function AccountLockedScene({
               )}
               <button
                 onClick={() => onChoose("safe")}
-                className="mt-3 w-full rounded border border-zinc-300 py-2 text-sm font-medium hover:bg-zinc-100"
+                disabled={choiceLocked}
+                className="mt-3 w-full rounded border border-zinc-300 py-2 text-sm font-medium hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 先不填，走官方流程联系 IT
               </button>
               <button
                 onClick={() => onChoose("unsure")}
-                className="mt-2 w-full text-xs text-zinc-400 hover:text-zinc-600"
+                disabled={choiceLocked}
+                className="mt-2 w-full text-xs text-zinc-400 hover:text-zinc-600 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 🤔 我不确定，能再讲清楚一点吗
               </button>

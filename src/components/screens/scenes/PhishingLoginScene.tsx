@@ -13,9 +13,11 @@ const pages: BrowserPage[] = [
 export function PhishingLoginScene({
   onChoose,
   onAction,
+  choiceLocked,
 }: {
   onChoose: (choice: "safe" | "danger" | "unsure") => void;
   onAction: (action: SceneAction) => void;
+  choiceLocked: boolean;
 }) {
   const [urlInspected, setUrlInspected] = useState(false);
   const [linkNoticed, setLinkNoticed] = useState(false);
@@ -169,10 +171,11 @@ export function PhishingLoginScene({
 
                 <button
                   onClick={() => onChoose("danger")}
+                  disabled={choiceLocked}
                   onMouseEnter={noticeLoginLink}
                   onFocus={noticeLoginLink}
                   onMouseLeave={() => setHoveringLogin(false)}
-                  className="w-full rounded bg-zinc-900 py-2 text-sm font-medium text-white hover:bg-zinc-700"
+                  className="w-full rounded bg-zinc-900 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   Log In
                 </button>
@@ -184,13 +187,15 @@ export function PhishingLoginScene({
 
                 <button
                   onClick={() => onChoose("safe")}
-                  className="mt-3 w-full text-xs text-zinc-500 underline hover:text-zinc-700"
+                  disabled={choiceLocked}
+                  className="mt-3 w-full text-xs text-zinc-500 underline hover:text-zinc-700 disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   这个弹窗看起来不对劲，上报它
                 </button>
                 <button
                   onClick={() => onChoose("unsure")}
-                  className="mt-2 w-full text-xs text-zinc-400 hover:text-zinc-600"
+                  disabled={choiceLocked}
+                  className="mt-2 w-full text-xs text-zinc-400 hover:text-zinc-600 disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   🤔 我不确定，能再讲清楚一点吗
                 </button>
