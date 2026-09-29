@@ -9,15 +9,24 @@ import { ChapterScreen } from "@/components/screens/ChapterScreen";
 import { DecisionScreen } from "@/components/screens/DecisionScreen";
 import { DebriefScreen } from "@/components/screens/DebriefScreen";
 import { buildFlow, DECISION_ENABLED_CHAPTER_IDS } from "@/lib/flow";
-import { getChapter } from "@/lib/story";
+import { getChapter, type DecisionResult } from "@/lib/story";
 
 const flow = buildFlow();
 
 export default function Home() {
   const [index, setIndex] = useState(0);
+  const [answers, setAnswers] = useState<Record<string, DecisionResult>>({});
 
   const goNext = () => setIndex((i) => Math.min(i + 1, flow.length - 1));
-  const restart = () => setIndex(0);
+  const restart = () => {
+    setAnswers({});
+    setIndex(0);
+  };
+
+  function recordAnswerAndGoNext(chapterId: string, result: DecisionResult) {
+    setAnswers((prev) => ({ ...prev, [chapterId]: result }));
+    goNext();
+  }
 
   const node = flow[index];
 
@@ -34,12 +43,17 @@ export default function Home() {
           const chapter = getChapter(node.chapterId);
           if (!chapter) return null;
           return DECISION_ENABLED_CHAPTER_IDS.includes(chapter.id) ? (
-            <DecisionScreen chapter={chapter} onNext={goNext} />
+            <DecisionScreen
+              chapter={chapter}
+              onNext={(result) => recordAnswerAndGoNext(chapter.id, result)}
+            />
           ) : (
             <ChapterScreen chapterId={node.chapterId} onNext={goNext} />
           );
         })()}
-      {node.type === "debrief" && <DebriefScreen onRestart={restart} />}
+      {node.type === "debrief" && (
+        <DebriefScreen answers={answers} onRestart={restart} />
+      )}
     </div>
   );
 }

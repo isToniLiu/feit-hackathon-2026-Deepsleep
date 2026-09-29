@@ -45,6 +45,14 @@ export interface Story {
 
 export const story = storyData as unknown as Story;
 
+// 阶段5：一次决策的结果，DecisionScreen完成后回传给page.tsx用于结局页统计。
+export interface DecisionResult {
+  choiceId: string;
+  choiceLabel: string;
+  reason: string;
+  feedback: string;
+}
+
 export function getMentor(mentorId: string): Mentor {
   return story.mentors[mentorId];
 }
