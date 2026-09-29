@@ -22,6 +22,33 @@
     "cta": "加入应急支援小组"
   },
 
+  "roles": {
+    "priya": {
+      "mentorId": "priya",
+      "type": "SECURITY ANALYST",
+      "label": "身份验证调查",
+      "description": "从 EduFlow 后台和登录请求入手，确认异常来源是否可信。",
+      "focus": "域名 · 状态页 · 凭据",
+      "route": "EduFlow Admin / Status Monitor"
+    },
+    "marcus": {
+      "mentorId": "marcus",
+      "type": "INCIDENT RESPONDER",
+      "label": "可疑文件响应",
+      "description": "跟进值班群里的修复工具，控制影响，同时保留后续调查需要的证据。",
+      "focus": "文件 · 来源 · 时间线",
+      "route": "Incident Chat / File Preview"
+    },
+    "aiko": {
+      "mentorId": "aiko",
+      "type": "GRC & COMPLIANCE LEAD",
+      "label": "账号流程核查",
+      "description": "核对锁定和恢复流程，判断哪些信息可以提交、哪些动作必须正式上报。",
+      "focus": "流程 · 授权 · 上报",
+      "route": "Identity Portal / Security Notices"
+    }
+  },
+
   "mentors": {
     "priya": {
       "name": "Priya",
