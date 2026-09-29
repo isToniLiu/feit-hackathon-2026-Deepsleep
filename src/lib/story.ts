@@ -54,6 +54,13 @@ export interface DecisionResult {
   choiceLabel: string;
   reason: string;
   feedback: string;
+  actionHistory: string[];
+}
+
+export interface SceneAction {
+  summary: string;
+  explanation: string;
+  evidence?: string;
 }
 
 export interface EvidenceItem {

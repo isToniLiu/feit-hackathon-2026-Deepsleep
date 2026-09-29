@@ -9,22 +9,18 @@ import {
   type EvidenceItem,
   type IncidentStatus,
   type Option,
+  type SceneAction,
 } from "@/lib/story";
 import { PhishingLoginScene } from "./scenes/PhishingLoginScene";
 import { MaliciousFileScene } from "./scenes/MaliciousFileScene";
 import { AccountLockedScene } from "./scenes/AccountLockedScene";
 import { ChatPanel, type ChatMessage } from "@/components/chat/ChatPanel";
 
-// 场景化改造：左边是可交互的模拟界面(调查线索+拍板动作)，
-// 右边是贯穿全程的侧边栏聊天——带教同事在这里"远程支援"，
-// 唯一一次"为什么这么选"的理由输入也嵌在这个聊天里，不再是单独一屏的表单。
-// 🧭参考卡、🫁暂停都是Should项，这里先不做，见DEV_PLAN.md。
-
 type SceneChoice = "safe" | "danger" | "unsure";
 
 type SceneComponent = ComponentType<{
   onChoose: (choice: SceneChoice) => void;
-  onInvestigate: (note: string) => void;
+  onAction: (action: SceneAction) => void;
 }>;
 
 const SCENES: Record<string, SceneComponent> = {
@@ -58,7 +54,6 @@ export function DecisionScreen({
 }) {
   const mentor = getMentor(chapter.mentorId);
   const Scene = SCENES[chapter.id];
-
   const [messages, setMessages] = useState<ChatMessage[]>(() => {
     const context: ChatMessage[] = [{ id: nextId(), role: "mentor", text: mentor.line }];
     if (chapter.continuityLine && priorEvidence.length > 0) {
@@ -84,29 +79,43 @@ export function DecisionScreen({
   const [done, setDone] = useState(false);
   const [lastReason, setLastReason] = useState("");
   const [lastFeedback, setLastFeedback] = useState("");
+  const [actionHistory, setActionHistory] = useState<string[]>([]);
 
   function appendMessage(role: ChatMessage["role"], text: string) {
     setMessages((prev) => [...prev, { id: nextId(), role, text }]);
   }
 
-  function handleInvestigate(note: string) {
-    appendMessage("system", note);
-    onEvidence(note);
+  function handleAction(action: SceneAction) {
+    appendMessage("system", `ACTION LOG · ${action.summary}`);
+    appendMessage("mentor", action.explanation);
+    setActionHistory((prev) => [...prev, action.summary]);
+    if (action.evidence) onEvidence(action.evidence);
   }
 
   function handleChoose(choiceId: SceneChoice) {
     if (choiceId === "unsure") {
       const option = chapter.options.find((o) => o.id === "unsure");
       appendMessage("player", option?.label ?? "我不确定，能再讲清楚一点吗？");
+      handleAction({
+        summary: "你暂停了处置，选择先请求远程支援",
+        explanation: "这个动作不会提交凭据、运行文件或发送验证码。你保留了继续调查的空间，我先用更简单的话拆解眼前的风险。",
+      });
       appendMessage("mentor", story.fallback.unsure);
-      return; // 不算拍板，玩家还能回场景里继续操作
+      return;
     }
 
     const option = chapter.options.find((o) => o.id === choiceId);
     if (!option) return;
     setPendingChoice(option);
     appendMessage("player", option.label);
-    appendMessage("mentor", "为什么你决定这么做？打几句告诉我你当时是怎么想的。");
+    handleAction({
+      summary: `你执行了处置动作：${option.label}`,
+      explanation:
+        choiceId === "safe"
+          ? "系统会保留当前现场，并把请求交给正式的内部处理流程。这个动作不会把凭据、文件或验证码交给未知来源。"
+          : "这个动作会把你带到未知来源的页面或程序。它可能扩大事故影响，所以我先把风险状态标记出来，再听你说明判断依据。",
+    });
+    appendMessage("mentor", "动作已经记录。现在告诉我你为什么这样处理，最好结合你刚才查到的线索。 ");
   }
 
   async function handleSend() {
@@ -125,6 +134,7 @@ export function DecisionScreen({
           chapterId: chapter.id,
           choice: pendingChoice.id,
           reason,
+          actions: actionHistory,
         }),
       });
       const json = await res.json();
@@ -133,7 +143,6 @@ export function DecisionScreen({
           ? json.data.feedback
           : fallbackFeedback(pendingChoice.id);
     } catch {
-      // 兜底机制（Must项）：网络请求本身失败时，前端也不卡死，直接用预设文案。
       feedback = fallbackFeedback(pendingChoice.id);
     }
 
@@ -149,22 +158,25 @@ export function DecisionScreen({
       <div className="flex flex-1 flex-col items-center justify-center gap-4 overflow-y-auto p-6 text-center">
         <div className="flex w-full max-w-lg items-center justify-between text-[10px] uppercase tracking-[0.16em] text-zinc-400">
           <span>Live incident / {chapter.id.replace("chapter", "0")}</span>
-          <span>{priorEvidence.length} evidence logged</span>
+          <span>{actionHistory.length} actions logged</span>
         </div>
-        <span className="text-xs uppercase tracking-wide text-zinc-400">
-          {chapter.threatType}
-        </span>
+        <span className="text-xs uppercase tracking-wide text-zinc-400">{chapter.threatType}</span>
         <h1 className="max-w-lg text-2xl font-semibold">{chapter.title}</h1>
         <p className="max-w-lg text-zinc-600">{chapter.scenario}</p>
 
-        {Scene && !pendingChoice && (
-          <Scene onChoose={handleChoose} onInvestigate={handleInvestigate} />
-        )}
+        {Scene && !pendingChoice && <Scene onChoose={handleChoose} onAction={handleAction} />}
 
         {pendingChoice && !done && (
-          <p className="text-sm text-zinc-500">
-            已经做出决定了，去右边跟{mentor.name}说说你当时是怎么想的 →
-          </p>
+          <div className="w-full max-w-lg rounded-lg border border-zinc-300 bg-white p-5 text-left shadow-lg">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-400">Action recorded</p>
+            <p className="mt-2 text-sm font-medium text-zinc-800">{pendingChoice.label}</p>
+            <p className="mt-2 text-sm leading-6 text-zinc-600">
+              {pendingChoice.id === "safe"
+                ? "现场已保留，正式处理流程正在接管。"
+                : "系统已标记为高风险动作。请不要继续提交更多资料，先说明你当时依据了哪些线索。"}
+            </p>
+            <p className="mt-4 text-xs text-zinc-400">远程支援已在右侧记录动作并等待你的判断理由。</p>
+          </div>
         )}
 
         {done && (
@@ -175,6 +187,7 @@ export function DecisionScreen({
                 choiceLabel: pendingChoice!.label,
                 reason: lastReason,
                 feedback: lastFeedback,
+                actionHistory,
               })
             }
             className="rounded-full bg-zinc-900 px-6 py-3 text-sm font-medium text-white hover:bg-zinc-700"
@@ -192,7 +205,7 @@ export function DecisionScreen({
         onInputChange={setInputValue}
         onSend={handleSend}
         isSending={isSending}
-        placeholder={pendingChoice ? "打几句你当时的想法……" : "先在左边做出决定"}
+        placeholder={pendingChoice ? "打几句你当时的想法……" : "先在浏览器里调查现场"}
       />
     </div>
   );

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { BrowserShell, type BrowserPage } from "@/components/browser/BrowserShell";
+import type { SceneAction } from "@/lib/story";
 
 const pages: BrowserPage[] = [
   { id: "admin", label: "EduFlow Admin", address: "eduflow-portal.com/admin" },
@@ -11,10 +12,10 @@ const pages: BrowserPage[] = [
 
 export function PhishingLoginScene({
   onChoose,
-  onInvestigate,
+  onAction,
 }: {
   onChoose: (choice: "safe" | "danger" | "unsure") => void;
-  onInvestigate: (note: string) => void;
+  onAction: (action: SceneAction) => void;
 }) {
   const [urlInspected, setUrlInspected] = useState(false);
   const [linkNoticed, setLinkNoticed] = useState(false);
@@ -25,24 +26,40 @@ export function PhishingLoginScene({
 
   function inspectUrl() {
     if (urlInspected) return;
-    onInvestigate("🔍 你检查了浏览器地址栏：eduflow-portal.com/admin");
+    onAction({
+      summary: "你检查了浏览器地址栏",
+      explanation: "这个动作只读取当前页面地址，不会提交任何凭据。它帮助你确认自己现在位于哪个站点。",
+      evidence: "🔍 你检查了浏览器地址栏：eduflow-portal.com/admin",
+    });
     setUrlInspected(true);
   }
 
   function noticeLoginLink() {
     setHoveringLogin(true);
     if (linkNoticed) return;
-    onInvestigate("🔍 你查看了登录按钮的目标：eduflow-portal-auth.net/login");
+    onAction({
+      summary: "你查看了 Log In 按钮的目标地址",
+      explanation: "按钮没有把请求送回当前的 EduFlow 域名，而是指向了另一个登录站点。这个差异是重要的风险信号。",
+      evidence: "🔍 你查看了登录按钮的目标：eduflow-portal-auth.net/login",
+    });
     setLinkNoticed(true);
   }
 
   function handleNavigate(pageId: string) {
     if (pageId === "status" && !statusVisited) {
-      onInvestigate("🔍 你打开了官方状态页：身份验证服务从 23:47 开始降级");
+      onAction({
+        summary: "你打开了官方 Status Monitor",
+        explanation: "你离开了登录弹窗，去查看独立的服务状态记录。这个动作不会改变账号状态，只会增加一条可交叉验证的来源。",
+        evidence: "🔍 你打开了官方状态页：身份验证服务从 23:47 开始降级",
+      });
       setStatusVisited(true);
     }
     if (pageId === "support" && !supportVisited) {
-      onInvestigate("🔍 你打开了 IT 帮助页：正规登录入口是 eduflow-portal.com/login");
+      onAction({
+        summary: "你打开了 IT Access Support",
+        explanation: "你正在查看公司自己的登录恢复流程。这里的说明可以用来对照当前弹窗是否符合内部规则。",
+        evidence: "🔍 你打开了 IT 帮助页：正规登录入口是 eduflow-portal.com/login",
+      });
       setSupportVisited(true);
     }
   }
@@ -52,14 +69,19 @@ export function PhishingLoginScene({
       pages={pages}
       initialPage="admin"
       onNavigate={handleNavigate}
-      onUnknownAddress={(address) => onInvestigate(`🔍 你尝试访问了未登记的地址：${address}`)}
+      onUnknownAddress={(address) =>
+        onAction({
+          summary: `你尝试访问了未登记的地址：${address}`,
+          explanation: "这个地址不在当前模拟浏览器的内部书签中，页面没有被打开。你保留了原来的现场。",
+        })
+      }
     >
       {(pageId, navigate) => {
         if (pageId === "status") {
-          return <StatusPage onInvestigate={onInvestigate} onNavigate={navigate} />;
+          return <StatusPage onAction={onAction} onNavigate={navigate} />;
         }
         if (pageId === "support") {
-          return <SupportPage onInvestigate={onInvestigate} onNavigate={navigate} />;
+          return <SupportPage onAction={onAction} onNavigate={navigate} />;
         }
 
         return (
@@ -112,7 +134,13 @@ export function PhishingLoginScene({
                     <p className="text-xs text-zinc-500">EduFlow requires you to sign in again.</p>
                   </div>
                   <button
-                    onClick={() => setPopupOpen(false)}
+                    onClick={() => {
+                      onAction({
+                        summary: "你关闭了 Session Expired 弹窗",
+                        explanation: "弹窗被收起，账号密码没有被提交。它仍然作为一条待处理通知留在后台，随时可以重新打开。",
+                      });
+                      setPopupOpen(false);
+                    }}
                     className="rounded px-2 text-lg leading-none text-zinc-400 hover:bg-zinc-100"
                     aria-label="关闭登录提示"
                   >
@@ -169,7 +197,13 @@ export function PhishingLoginScene({
               </div>
             ) : (
               <button
-                onClick={() => setPopupOpen(true)}
+                onClick={() => {
+                  onAction({
+                    summary: "你重新打开了待处理的 Session Expired 通知",
+                    explanation: "重新打开通知不会发送数据，只是把之前隐藏的登录请求带回现场，方便你继续检查。",
+                  });
+                  setPopupOpen(true);
+                }}
                 className="absolute bottom-4 right-4 rounded border border-amber-300 bg-amber-50 px-3 py-2 text-xs text-amber-800 shadow-sm hover:bg-amber-100"
               >
                 1 条待处理通知 · Session expired
@@ -183,10 +217,10 @@ export function PhishingLoginScene({
 }
 
 function StatusPage({
-  onInvestigate,
+  onAction,
   onNavigate,
 }: {
-  onInvestigate: (note: string) => void;
+  onAction: (action: SceneAction) => void;
   onNavigate: (pageId: string) => void;
 }) {
   return (
@@ -201,7 +235,13 @@ function StatusPage({
         <StatusRow label="Background workers" value="Operational" tone="green" />
       </div>
       <button
-        onClick={() => onInvestigate("🔍 官方状态页记录：身份验证服务降级，但没有要求用户重新输入密码")}
+        onClick={() =>
+          onAction({
+            summary: "你查看了身份验证事件详情",
+            explanation: "官方状态页确认服务确实降级，但它没有要求员工重新输入密码。你获得了一条可以和弹窗对照的证据。",
+            evidence: "🔍 官方状态页记录：身份验证服务降级，但没有要求用户重新输入密码",
+          })
+        }
         className="mt-5 rounded border border-dashed border-zinc-300 px-3 py-2 text-xs text-zinc-600 hover:bg-zinc-50"
       >
         查看身份验证事件详情
@@ -217,10 +257,10 @@ function StatusPage({
 }
 
 function SupportPage({
-  onInvestigate,
+  onAction,
   onNavigate,
 }: {
-  onInvestigate: (note: string) => void;
+  onAction: (action: SceneAction) => void;
   onNavigate: (pageId: string) => void;
 }) {
   return (
@@ -234,7 +274,13 @@ function SupportPage({
         <p className="mt-3 text-xs text-zinc-500">IT 不会通过弹窗要求你重新提交密码，也不会使用临时域名。</p>
       </div>
       <button
-        onClick={() => onInvestigate("🔍 IT 支持说明确认：公司登录入口是 eduflow-portal.com/login")}
+        onClick={() =>
+          onAction({
+            summary: "你把 IT 支持说明加入案件档案",
+            explanation: "这条说明给出了官方登录入口，也明确说 IT 不会使用临时域名。它可以直接用来核对当前弹窗的目标地址。",
+            evidence: "🔍 IT 支持说明确认：公司登录入口是 eduflow-portal.com/login",
+          })
+        }
         className="mt-5 rounded bg-zinc-900 px-3 py-2 text-xs font-medium text-white hover:bg-zinc-700"
       >
         将这条说明加入案件档案
