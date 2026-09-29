@@ -29,6 +29,7 @@ export interface Story {
     incidentTitle: string;
     incidentSubtitle: string;
     actions: { primer: string; skip: string };
+    primerContent: { title: string; body: string; cta: string };
   };
   briefing: { title: string; body: string; cta: string };
   mentors: Record<string, Mentor>;
