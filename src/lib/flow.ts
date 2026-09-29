@@ -1,8 +1,6 @@
 import { story } from "./story";
 
-// 页面状态机：节点顺序对应 PRD.md 1.1节逐屏流程表
-// dashboard → briefing → mentor1 → chapter1 → mentor2 → chapter2 → mentor3 → chapter3 → debrief
-// "30秒入门速览"是Could项，先不进状态机。
+// 页面状态机：案件看板 → 简报 → 三个连续事故节点 → 结案复盘。
 
 export type FlowNode =
   | { type: "dashboard" }
@@ -11,14 +9,12 @@ export type FlowNode =
   | { type: "chapter"; chapterId: string }
   | { type: "debrief" };
 
-// Must范围先只做篇章①③的真实决策模块（PRD.md MVP范围）；篇章②是Should项，
-// 暂时还是阶段1的占位screen，等Must跑通后再升级成DecisionScreen。
-export const DECISION_ENABLED_CHAPTER_IDS = ["chapter1", "chapter3"];
+// 三个篇章都在同一条事故链里，全部使用场景化决策模块。
+export const DECISION_ENABLED_CHAPTER_IDS = ["chapter1", "chapter2", "chapter3"];
 
 export function buildFlow(): FlowNode[] {
-  // 决策已启用的篇章(①③)现在把带教同事做成贯穿全程的侧边栏聊天角色，
-  // 不再需要单独一屏"自我介绍"——mentor的开场白直接在DecisionScreen里的聊天窗口出现。
-  // 篇章②还没做场景化，继续走旧的"mentor介绍屏 + 占位chapter屏"两步。
+  // 带教同事作为远程支援出现在每个决策场景的聊天窗口中，
+  // 不再插入会打断事故节奏的单独mentor介绍屏。
   const chapterNodes = story.chapters.flatMap<FlowNode>((chapter) =>
     DECISION_ENABLED_CHAPTER_IDS.includes(chapter.id)
       ? [{ type: "chapter", chapterId: chapter.id }]

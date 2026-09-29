@@ -14,6 +14,7 @@ export interface Chapter {
   threatType: string;
   title: string;
   scenario: string;
+  continuityLine?: string;
   options: Option[];
 }
 
@@ -39,6 +40,7 @@ export interface Story {
     title: string;
     scoreLabel: string;
     rolesRecapTitle: string;
+    evidenceTitle: string;
     flavorByTier: { high: string; mid: string; low: string };
   };
   fallback: { safe: string; danger: string; unsure: string };
@@ -53,6 +55,14 @@ export interface DecisionResult {
   reason: string;
   feedback: string;
 }
+
+export interface EvidenceItem {
+  id: string;
+  chapterId: string;
+  text: string;
+}
+
+export type IncidentStatus = "monitoring" | "containment-risk" | "containment-progress";
 
 export function getMentor(mentorId: string): Mentor {
   return story.mentors[mentorId];

@@ -1,24 +1,24 @@
 {
-  "_comment": "剧情静态数据骨架，对应 DEV_PLAN.md 阶段0/1。文案先占位，P3定稿后替换 title/body/optionLabels 等字段值，不用改字段结构。",
+  "_comment": "Northlight Digital内部事故档案：文案和线索都属于虚构演练内容，不连接真实公司或系统。",
 
   "dashboard": {
     "greeting": "Hey Jordan, welcome back.",
     "incidentTitle": "INCIDENT — EduFlow Service Disruption",
-    "incidentSubtitle": "占位文案：今晚EduFlow服务出现异常，需要你加入应急支援。",
+    "incidentSubtitle": "今晚 23:47，EduFlow 的身份验证服务开始出现异常。应急频道已经把你加入值班名单。",
     "actions": {
       "primer": "30秒入门速览",
       "skip": "跳过，我知道基本概念"
     },
     "primerContent": {
       "title": "30秒速览：今晚可能遇到什么",
-      "body": "占位文案：网络安全事件里最常见的三类麻烦——有人假装系统提醒骗你重新登录、有人发一个看起来正常但其实有害的文件、有人用一个吓人的锁定提示逼你立刻填资料。记住一条：越是催你马上做决定的提示，越值得先停下来想一想。",
+      "body": "你今晚会看到三种看起来像正常工作流程的请求：重新登录、运行修复工具、解除账号锁定。它们的共同点是都在催你立刻操作。先查看来源、提交地址和内部流程，再决定是否执行。",
       "cta": "继续"
     }
   },
 
   "briefing": {
     "title": "威胁简报",
-    "body": "占位文案：今晚的攻击者是谁、图什么（机会主义攻击者专挑高负载/人手紧张的时间点下手）。",
+    "body": "23:47，EduFlow 正处于学生集中提交作业的高峰。攻击者不需要先攻破核心系统，只要让值班人员在混乱中替他们完成一次登录、运行一个文件，或交出验证码，就能把事故继续向内推进。",
     "cta": "加入应急支援小组"
   },
 
@@ -26,17 +26,17 @@
     "priya": {
       "name": "Priya",
       "role": "Security Analyst",
-      "line": "占位台词：Priya的自我介绍，1-2句。"
+      "line": "我是 Priya，今晚负责盯身份验证和异常登录。你不用马上相信任何弹窗；先把你看到的证据留在案件档案里，我们一起判断。"
     },
     "marcus": {
       "name": "Marcus",
       "role": "Incident Responder",
-      "line": "占位台词：Marcus的自我介绍，1-2句。"
+      "line": "Marcus 在这里。我负责处理已经进入系统的可疑东西。刚才有人把“紧急修复工具”发进了值班群，先别运行，我们要确认它从哪里来。"
     },
     "aiko": {
       "name": "Aiko",
       "role": "GRC & Compliance Lead",
-      "line": "占位台词：Aiko的自我介绍，1-2句。"
+      "line": "我是 Aiko，负责把事故拉回正式流程。账号被锁定时最危险的往往不是锁定本身，而是有人利用焦虑让你绕过验证和上报渠道。"
     }
   },
 
@@ -44,9 +44,9 @@
     {
       "id": "chapter1",
       "mentorId": "priya",
-      "threatType": "phishing",
-      "title": "篇章① Credential Phishing",
-      "scenario": "占位文案：你正在处理EduFlow后台工作时，屏幕上突然弹出了这个——",
+      "threatType": "INCIDENT 01 / AUTHENTICATION",
+      "title": "后台会话突然失效",
+      "scenario": "你正在检查 EduFlow 的提交队列。一个没有出现在值班记录里的“Session Expired”窗口盖住了后台。",
       "options": [
         { "id": "safe", "label": "上报了这个可疑的重新登录弹窗" },
         { "id": "danger", "label": "在弹窗里输入了账号密码重新登录" },
@@ -56,21 +56,23 @@
     {
       "id": "chapter2",
       "mentorId": "marcus",
-      "threatType": "malicious-file",
-      "title": "篇章② 恶意文件/仿冒社工",
-      "scenario": "占位文案：应急群里有人发来 fix_deploy_issue.exe，称是IT紧急修复工具。",
+      "threatType": "INCIDENT 02 / FILE DELIVERY",
+      "title": "值班群里的紧急修复工具",
+      "scenario": "身份验证异常还没有结束，值班群里有人发来 fix_deploy_issue.exe，声称它能修复刚才的部署问题。消息来自一个你不认识的外部账号。",
+      "continuityLine": "我看到了你在第一起事件里标记的可疑登录域名。这个文件就是在那次弹窗出现后两分钟发进群里的，先把它当成同一条事件链处理。",
       "options": [
-        { "id": "safe", "label": "占位：安全选项文案" },
-        { "id": "danger", "label": "占位：危险选项文案" },
+        { "id": "safe", "label": "隔离文件并通过内部渠道上报" },
+        { "id": "danger", "label": "运行工具，看看能不能修复部署" },
         { "id": "unsure", "label": "🤔 我不确定，能再讲清楚一点吗" }
       ]
     },
     {
       "id": "chapter3",
       "mentorId": "aiko",
-      "threatType": "ransom-lockout",
-      "title": "篇章③ 勒索式账号锁定",
-      "scenario": "占位文案：你的账号突然被锁定，屏幕上出现了这个——",
+      "threatType": "INCIDENT 03 / ACCOUNT CONTROL",
+      "title": "账号被锁定，但谁在要求验证？",
+      "scenario": "值班频道刚安静下来，你的 Northlight 账号突然被锁定。锁定提示要求你立即提交工号和手机验证码，才能恢复访问。",
+      "continuityLine": "这次锁定发生在可疑文件消息之后。不要把它当成另一条孤立提醒：先核对它和前面两个域名、时间点是否对得上。",
       "options": [
         { "id": "safe", "label": "没有填资料，转而联系IT走官方流程" },
         { "id": "danger", "label": "直接在验证表单里填了工号和验证码" },
@@ -80,25 +82,26 @@
   ],
 
   "referenceCard": {
-    "phishing": ["占位速查步骤1", "占位速查步骤2", "占位速查步骤3"],
-    "malicious-file": ["占位速查步骤1", "占位速查步骤2", "占位速查步骤3"],
-    "ransom-lockout": ["占位速查步骤1", "占位速查步骤2", "占位速查步骤3"]
+    "phishing": ["检查网址和真实提交地址", "不要在异常弹窗里输入凭据", "通过已知的内部渠道上报"],
+    "malicious-file": ["确认发送者和文件来源", "不要直接运行未知可执行文件", "隔离文件并保留原始信息"],
+    "ransom-lockout": ["不要被“立即解锁”催促", "核对官方通知和提交地址", "使用正式IT流程处理账号异常"]
   },
 
   "debrief": {
     "title": "今晚的表现",
     "scoreLabel": "安全决策力评分",
     "rolesRecapTitle": "今晚你体验过的三个岗位",
+    "evidenceTitle": "你拼出的事故链",
     "flavorByTier": {
-      "high": "占位文案：高分档位反馈",
-      "mid": "占位文案：中等档位反馈",
-      "low": "占位文案：低分档位反馈"
+      "high": "你在压力下仍然愿意先核对来源、保留证据，再通过正式渠道行动。这个习惯正是事故响应中最有价值的第一道防线。",
+      "mid": "你已经识别出部分危险信号，但在连续警报叠加时还容易被“立即处理”的节奏带着走。下一次，先把来源和提交地址写进案件档案。",
+      "low": "这次事故里有几次请求故意制造了紧迫感。你不需要记住所有术语，只要先停下来确认来源、地址和正式流程，就能争取回主动权。"
     }
   },
 
   "fallback": {
-    "safe": "占位兜底文案：AI暂时无法响应，这里是针对安全选项的预设反馈。",
-    "danger": "占位兜底文案：AI暂时无法响应，这里是针对危险选项的预设反馈。",
-    "unsure": "占位兜底文案：AI暂时无法响应，这里是针对“我不确定”的预设简化说明。"
+    "safe": "你先保留了现场，没有把凭据或文件交给未知来源，再走内部渠道上报。这能让团队在不扩大影响的情况下继续调查。",
+    "danger": "这个动作会把你交给未知来源的页面或程序。先停止操作、保留现场，并通过已知的内部渠道上报，通常比继续尝试更安全。",
+    "unsure": "可以先不做决定。把请求的来源、提交地址和它要求你提供的资料记下来，再通过你已知的内部渠道确认。"
   }
 }

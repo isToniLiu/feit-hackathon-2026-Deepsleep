@@ -1,4 +1,10 @@
-import { getChapter, getMentor, story, type DecisionResult } from "@/lib/story";
+import {
+  getChapter,
+  getMentor,
+  story,
+  type DecisionResult,
+  type EvidenceItem,
+} from "@/lib/story";
 
 // 阶段5：评分环用纯CSS conic-gradient实现，先求"功能对"，不追求美观（后续UI素材到位再换皮）。
 
@@ -10,9 +16,11 @@ function scoreTier(percent: number): "high" | "mid" | "low" {
 
 export function DebriefScreen({
   answers,
+  evidence,
   onRestart,
 }: {
   answers: Record<string, DecisionResult>;
+  evidence: EvidenceItem[];
   onRestart: () => void;
 }) {
   const { debrief, mentors } = story;
@@ -45,6 +53,26 @@ export function DebriefScreen({
         </div>
       </div>
       <p className="max-w-md text-zinc-600">{debrief.flavorByTier[tier]}</p>
+
+      <div className="w-full max-w-md text-left">
+        <h2 className="mb-2 font-semibold">{debrief.evidenceTitle}</h2>
+        <p className="mb-3 text-sm text-zinc-500">
+          你在现场留下了 {evidence.length} 条记录。它们把三个看似独立的请求串成了同一条调查线索。
+        </p>
+        <ol className="flex flex-col gap-2">
+          {evidence.map((item, index) => (
+            <li key={item.id} className="flex gap-3 rounded border border-zinc-200 p-3 text-sm">
+              <span className="font-mono text-xs text-zinc-400">{String(index + 1).padStart(2, "0")}</span>
+              <span>{item.text.replace(/^🔍\s*/, "")}</span>
+            </li>
+          ))}
+          {evidence.length === 0 && (
+            <li className="rounded border border-dashed border-zinc-300 p-3 text-sm text-zinc-500">
+              没有留下调查记录。
+            </li>
+          )}
+        </ol>
+      </div>
 
       <div className="w-full max-w-md text-left">
         <h2 className="mb-2 font-semibold">关键决策回顾</h2>
