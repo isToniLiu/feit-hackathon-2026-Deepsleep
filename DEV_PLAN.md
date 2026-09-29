@@ -27,14 +27,15 @@
 
 ---
 
-### 阶段 1 · 页面状态机 + 静态screens（对应原P1任务包）
-- [ ] 建立页面级状态机（`useState`/`useReducer`），节点顺序：
+### 阶段 1 · 页面状态机 + 静态screens（对应原P1任务包）✅ 已完成
+- [x] 建立页面级状态机（`useState`，`src/app/page.tsx` + `src/lib/flow.ts`），节点顺序：
   `dashboard → briefing → mentor1 → chapter1 → mentor2 → chapter2 → mentor3 → chapter3 → debrief`
   （"30秒速览"入门环节先跳过，属于Could项）
-- [ ] 每个节点先做一个**最简单的占位screen**（标题+一段文字+"下一步"按钮），能把整条流程从头点到尾
-- [ ] 顶部倒计时组件先做静态展示（不接暂停逻辑，暂停机制是Should项，后面再加）
+- [x] 每个节点先做一个**最简单的占位screen**（标题+一段文字+"下一步"按钮，`src/components/screens/`），能把整条流程从头点到尾
+- [x] 顶部倒计时组件先做静态展示（`src/components/TopBar.tsx`，不接暂停逻辑，暂停机制是Should项，后面再加）
 
 **验收点**：从dashboard点到debrief，全程不报错、不白屏，内容是占位文字也没关系。
+→ 已用浏览器实测走完整条流程（含"重新开始"回到dashboard），9个节点全部正常渲染，无报错无白屏。
 
 ---
 
