@@ -11,6 +11,10 @@ export type FlowNode =
   | { type: "chapter"; chapterId: string }
   | { type: "debrief" };
 
+// Must范围先只做篇章①③的真实决策模块（PRD.md MVP范围）；篇章②是Should项，
+// 暂时还是阶段1的占位screen，等Must跑通后再升级成DecisionScreen。
+export const DECISION_ENABLED_CHAPTER_IDS = ["chapter1", "chapter3"];
+
 export function buildFlow(): FlowNode[] {
   const chapterNodes = story.chapters.flatMap<FlowNode>((chapter) => [
     { type: "mentor", chapterId: chapter.id },
