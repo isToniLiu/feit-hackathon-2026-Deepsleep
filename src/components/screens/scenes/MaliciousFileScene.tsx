@@ -13,9 +13,11 @@ const pages: BrowserPage[] = [
 export function MaliciousFileScene({
   onChoose,
   onAction,
+  choiceLocked,
 }: {
   onChoose: (choice: "safe" | "danger" | "unsure") => void;
   onAction: (action: SceneAction) => void;
+  choiceLocked: boolean;
 }) {
   const [senderInspected, setSenderInspected] = useState(false);
   const [fileInspected, setFileInspected] = useState(false);
@@ -74,6 +76,7 @@ export function MaliciousFileScene({
               onAction={inspectFile}
               onNavigate={navigate}
               onChoose={onChoose}
+              choiceLocked={choiceLocked}
             />
           );
         }
@@ -137,7 +140,7 @@ export function MaliciousFileScene({
                 </div>
               )}
 
-              <ActionButtons onChoose={onChoose} />
+              <ActionButtons onChoose={onChoose} choiceLocked={choiceLocked} />
             </div>
           </div>
         );
@@ -151,11 +154,13 @@ function FilePreviewPage({
   onAction,
   onNavigate,
   onChoose,
+  choiceLocked,
 }: {
   inspected: boolean;
   onAction: () => void;
   onNavigate: (pageId: string) => void;
   onChoose: (choice: "safe" | "danger" | "unsure") => void;
+  choiceLocked: boolean;
 }) {
   return (
     <div className="min-h-[25rem] bg-white p-5">
@@ -178,7 +183,7 @@ function FilePreviewPage({
       >
         {inspected ? "已将文件元数据加入案件档案" : "检查文件签名"}
       </button>
-      <ActionButtons onChoose={onChoose} />
+      <ActionButtons onChoose={onChoose} choiceLocked={choiceLocked} />
       <button
         onClick={() => onNavigate("chat")}
         className="mt-4 block text-xs text-zinc-500 underline decoration-dotted"
@@ -223,26 +228,31 @@ function TimelinePage({
 
 function ActionButtons({
   onChoose,
+  choiceLocked,
 }: {
   onChoose: (choice: "safe" | "danger" | "unsure") => void;
+  choiceLocked: boolean;
 }) {
   return (
     <div className="flex flex-col gap-2">
       <button
         onClick={() => onChoose("danger")}
-        className="w-full rounded bg-red-600 py-2 text-sm font-medium text-white hover:bg-red-500"
+        disabled={choiceLocked}
+        className="w-full rounded bg-red-600 py-2 text-sm font-medium text-white hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-40"
       >
         运行工具，看看能不能修复部署
       </button>
       <button
         onClick={() => onChoose("safe")}
-        className="w-full rounded border border-zinc-300 py-2 text-sm font-medium hover:bg-zinc-100"
+        disabled={choiceLocked}
+        className="w-full rounded border border-zinc-300 py-2 text-sm font-medium hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-40"
       >
         隔离文件并通过内部渠道上报
       </button>
       <button
         onClick={() => onChoose("unsure")}
-        className="w-full py-1 text-xs text-zinc-400 hover:text-zinc-600"
+        disabled={choiceLocked}
+        className="w-full py-1 text-xs text-zinc-400 hover:text-zinc-600 disabled:cursor-not-allowed disabled:opacity-40"
       >
         🤔 我不确定，能再讲清楚一点吗
       </button>

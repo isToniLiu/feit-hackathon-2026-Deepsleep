@@ -21,6 +21,7 @@ type SceneChoice = "safe" | "danger" | "unsure";
 type SceneComponent = ComponentType<{
   onChoose: (choice: SceneChoice) => void;
   onAction: (action: SceneAction) => void;
+  choiceLocked: boolean;
 }>;
 
 const SCENES: Record<string, SceneComponent> = {
@@ -93,6 +94,8 @@ export function DecisionScreen({
   }
 
   function handleChoose(choiceId: SceneChoice) {
+    if (pendingChoice || done || isSending) return;
+
     if (choiceId === "unsure") {
       const option = chapter.options.find((o) => o.id === "unsure");
       appendMessage("player", option?.label ?? "我不确定，能再讲清楚一点吗？");
@@ -164,36 +167,46 @@ export function DecisionScreen({
         <h1 className="max-w-lg text-2xl font-semibold">{chapter.title}</h1>
         <p className="max-w-lg text-zinc-600">{chapter.scenario}</p>
 
-        {Scene && !pendingChoice && <Scene onChoose={handleChoose} onAction={handleAction} />}
+        {Scene && (
+          <Scene
+            onChoose={handleChoose}
+            onAction={handleAction}
+            choiceLocked={Boolean(pendingChoice) || done}
+          />
+        )}
 
         {pendingChoice && !done && (
           <div className="w-full max-w-lg rounded-lg border border-zinc-300 bg-white p-5 text-left shadow-lg">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-zinc-400">Action recorded</p>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-amber-600">Decision staged · scene remains open</p>
             <p className="mt-2 text-sm font-medium text-zinc-800">{pendingChoice.label}</p>
             <p className="mt-2 text-sm leading-6 text-zinc-600">
               {pendingChoice.id === "safe"
                 ? "现场已保留，正式处理流程正在接管。"
                 : "系统已标记为高风险动作。请不要继续提交更多资料，先说明你当时依据了哪些线索。"}
             </p>
-            <p className="mt-4 text-xs text-zinc-400">远程支援已在右侧记录动作并等待你的判断理由。</p>
+            <p className="mt-4 text-xs text-zinc-400">你仍然可以在左侧切换页面、查看线索和更新案件档案。确认理由后才会离开现场。</p>
           </div>
         )}
 
         {done && (
-          <button
-            onClick={() =>
-              onNext({
-                choiceId: pendingChoice!.id,
-                choiceLabel: pendingChoice!.label,
-                reason: lastReason,
-                feedback: lastFeedback,
-                actionHistory,
-              })
-            }
-            className="rounded-full bg-zinc-900 px-6 py-3 text-sm font-medium text-white hover:bg-zinc-700"
-          >
-            继续调查
-          </button>
+          <div className="w-full max-w-lg rounded-lg border border-emerald-300 bg-emerald-50 p-5 text-left">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-emerald-700">AI feedback received · scene remains open</p>
+            <p className="mt-2 text-sm leading-6 text-emerald-900">反馈已经写入聊天记录。你可以继续查看当前页面和案件档案；确认后再进入下一起事件。</p>
+            <button
+              onClick={() =>
+                onNext({
+                  choiceId: pendingChoice!.id,
+                  choiceLabel: pendingChoice!.label,
+                  reason: lastReason,
+                  feedback: lastFeedback,
+                  actionHistory,
+                })
+              }
+              className="mt-4 rounded-full bg-zinc-900 px-5 py-2.5 text-sm font-medium text-white hover:bg-zinc-700"
+            >
+              确认反馈并进入下一事件 →
+            </button>
+          </div>
         )}
       </div>
 
