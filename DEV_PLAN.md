@@ -53,14 +53,17 @@
 
 ---
 
-### 阶段 3 · AI后端骨架 + 兜底机制（对应原P4任务包）
-- [ ] 建 `/api/get-feedback`（Next.js API Route），先返回写死的假回复，把接口形状定下来：
+### 阶段 3 · AI后端骨架 + 兜底机制（对应原P4任务包）✅ 已完成
+- [x] 建 `/api/get-feedback`（`src/app/api/get-feedback/route.ts`），先返回写死的假回复，接口形状：
   - 入参：`{ chapterId, choice, reason }`
   - 出参：`{ success, data: { feedback: string }, error }`（统一响应格式，见AGENTS.md）
-- [ ] 实现try/catch兜底：调用失败/超时时返回预设文案，不让前端卡死（这是Must，优先级很高）
-- [ ] 把阶段2里的假反馈，换成调用这个API拿到的（暂时还是假）反馈，验证前后端真的连通了
+  - 缺参数/非法JSON均返回`{success:false, error: "..."}`，HTTP 400
+- [x] 实现try/catch兜底：`generateFeedback`内部调用失败时外层catch返回预设文案(Must)；
+  `DecisionScreen`里`fetch`本身失败(网络断开)也会catch住并本地兜底，双层保险
+- [x] `DecisionScreen`改成真的`fetch("/api/get-feedback")`，不再本地直接读`story.fallback`
 
 **验收点**：前端点"获取AI反馈"→真的发了一个网络请求到`/api/get-feedback`→拿到返回值渲染出来（哪怕内容还是假的）。
+→ 已用curl直接测接口(正常/缺参数/非法JSON三种情况)，再用浏览器实测点击流程，`read_network_requests`和服务器日志都确认了真实的POST请求。
 
 ---
 
