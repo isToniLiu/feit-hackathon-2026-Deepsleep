@@ -1,11 +1,37 @@
+"use client";
+
+import { useState } from "react";
+import { TopBar } from "@/components/TopBar";
+import { DashboardScreen } from "@/components/screens/DashboardScreen";
+import { BriefingScreen } from "@/components/screens/BriefingScreen";
+import { MentorScreen } from "@/components/screens/MentorScreen";
+import { ChapterScreen } from "@/components/screens/ChapterScreen";
+import { DebriefScreen } from "@/components/screens/DebriefScreen";
+import { buildFlow } from "@/lib/flow";
+import { getChapter } from "@/lib/story";
+
+const flow = buildFlow();
+
 export default function Home() {
+  const [index, setIndex] = useState(0);
+
+  const goNext = () => setIndex((i) => Math.min(i + 1, flow.length - 1));
+  const restart = () => setIndex(0);
+
+  const node = flow[index];
+
   return (
-    <div className="flex flex-1 flex-col items-center justify-center gap-4 p-16 text-center">
-      <h1 className="text-2xl font-semibold">DDL Lockdown — 脚手架已就绪</h1>
-      <p className="max-w-md text-zinc-600">
-        阶段0已完成：Next.js + TypeScript + Tailwind 项目已初始化。
-        接下来按 DEV_PLAN.md 阶段1开始搭建页面状态机。
-      </p>
+    <div className="flex flex-1 flex-col">
+      <TopBar />
+      {node.type === "dashboard" && <DashboardScreen onNext={goNext} />}
+      {node.type === "briefing" && <BriefingScreen onNext={goNext} />}
+      {node.type === "mentor" && (
+        <MentorScreen mentorId={getChapter(node.chapterId)?.mentorId ?? ""} onNext={goNext} />
+      )}
+      {node.type === "chapter" && (
+        <ChapterScreen chapterId={node.chapterId} onNext={goNext} />
+      )}
+      {node.type === "debrief" && <DebriefScreen onRestart={restart} />}
     </div>
   );
 }
