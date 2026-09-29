@@ -24,6 +24,11 @@ export interface Mentor {
   line: string;
 }
 
+export interface RoleTask {
+  label: string;
+  hint: string;
+}
+
 export type RoleId = "priya" | "marcus" | "aiko";
 
 export interface RoleProfile {
@@ -34,7 +39,7 @@ export interface RoleProfile {
   focus: string;
   route: string;
   mission: string;
-  tasks: string[];
+  tasks: RoleTask[];
 }
 
 export interface Story {

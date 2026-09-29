@@ -57,10 +57,10 @@ export function RoleWorkspaceScreen({
 
             <ol className="mt-5 grid gap-3">
               {role.tasks.map((task, index) => (
-                <li key={task} className="flex gap-3 rounded-lg border border-slate-700 bg-slate-950/50 p-4">
+                <li key={task.label} className="flex gap-3 rounded-lg border border-slate-700 bg-slate-950/50 p-4">
                   <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full border border-teal-300/60 font-mono text-xs text-teal-200">0{index + 1}</span>
                   <div>
-                    <p className="text-sm font-medium text-slate-100">{task}</p>
+                    <p className="text-sm font-medium text-slate-100">{task.label}</p>
                     <p className="mt-1 text-xs uppercase tracking-[0.12em] text-slate-500">ready to investigate</p>
                   </div>
                 </li>

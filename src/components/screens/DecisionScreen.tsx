@@ -3,18 +3,21 @@
 import { useState, type ComponentType } from "react";
 import {
   story,
+  getRole,
   getMentor,
   type Chapter,
   type DecisionResult,
   type EvidenceItem,
   type IncidentStatus,
   type Option,
+  type RoleId,
   type SceneAction,
 } from "@/lib/story";
 import { PhishingLoginScene } from "./scenes/PhishingLoginScene";
 import { MaliciousFileScene } from "./scenes/MaliciousFileScene";
 import { AccountLockedScene } from "./scenes/AccountLockedScene";
 import { ChatPanel, type ChatMessage } from "@/components/chat/ChatPanel";
+import { ObjectivePanel } from "./ObjectivePanel";
 
 type SceneChoice = "safe" | "danger" | "unsure";
 
@@ -54,6 +57,7 @@ export function DecisionScreen({
   onNext: (result: DecisionResult) => void;
 }) {
   const mentor = getMentor(chapter.mentorId);
+  const role = getRole(chapter.mentorId as RoleId);
   const Scene = SCENES[chapter.id];
   const [messages, setMessages] = useState<ChatMessage[]>(() => {
     const context: ChatMessage[] = [{ id: nextId(), role: "mentor", text: mentor.line }];
@@ -121,6 +125,15 @@ export function DecisionScreen({
     appendMessage("mentor", "动作已经记录。现在告诉我你为什么这样处理，最好结合你刚才查到的线索。 ");
   }
 
+  const currentEvidenceCount = priorEvidence.filter(
+    (item) => item.chapterId === chapter.id,
+  ).length;
+  const objectiveCompleted = role.tasks.map((_, index) => {
+    if (index === 0) return actionHistory.length > 0;
+    if (index === 1) return currentEvidenceCount >= 2;
+    return done;
+  });
+
   async function handleSend() {
     if (!pendingChoice || inputValue.trim().length === 0 || isSending) return;
     const reason = inputValue.trim();
@@ -166,6 +179,8 @@ export function DecisionScreen({
         <span className="text-xs uppercase tracking-wide text-zinc-400">{chapter.threatType}</span>
         <h1 className="max-w-lg text-2xl font-semibold">{chapter.title}</h1>
         <p className="max-w-lg text-zinc-600">{chapter.scenario}</p>
+
+        <ObjectivePanel tasks={role.tasks} completed={objectiveCompleted} />
 
         {Scene && (
           <Scene
