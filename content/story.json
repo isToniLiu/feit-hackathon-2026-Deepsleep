@@ -46,10 +46,10 @@
       "mentorId": "priya",
       "threatType": "phishing",
       "title": "篇章① Credential Phishing",
-      "scenario": "占位文案：登录内部后台时弹出 “Session Expired” 假重新登录弹窗。",
+      "scenario": "占位文案：你正在处理EduFlow后台工作时，屏幕上突然弹出了这个——",
       "options": [
-        { "id": "safe", "label": "占位：安全选项文案" },
-        { "id": "danger", "label": "占位：危险选项文案" },
+        { "id": "safe", "label": "上报了这个可疑的重新登录弹窗" },
+        { "id": "danger", "label": "在弹窗里输入了账号密码重新登录" },
         { "id": "unsure", "label": "🤔 我不确定，能再讲清楚一点吗" }
       ]
     },
@@ -70,10 +70,10 @@
       "mentorId": "aiko",
       "threatType": "ransom-lockout",
       "title": "篇章③ 勒索式账号锁定",
-      "scenario": "占位文案：弹出 “Account Locked — Verification Required” 要求填资料解锁。",
+      "scenario": "占位文案：你的账号突然被锁定，屏幕上出现了这个——",
       "options": [
-        { "id": "safe", "label": "占位：安全选项文案" },
-        { "id": "danger", "label": "占位：危险选项文案" },
+        { "id": "safe", "label": "没有填资料，转而联系IT走官方流程" },
+        { "id": "danger", "label": "直接在验证表单里填了工号和验证码" },
         { "id": "unsure", "label": "🤔 我不确定，能再讲清楚一点吗" }
       ]
     }

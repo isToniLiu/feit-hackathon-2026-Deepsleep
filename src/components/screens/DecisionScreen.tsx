@@ -2,12 +2,21 @@
 
 import { useState } from "react";
 import { story, type Chapter, type DecisionResult, type Option } from "@/lib/story";
+import { PhishingLoginScene } from "./scenes/PhishingLoginScene";
+import { AccountLockedScene } from "./scenes/AccountLockedScene";
 
-// 阶段2/3：决策模块。
-// 流程：选选项(安全/危险) → 输入理由 → 调用/api/get-feedback获取反馈 → 下一步
-// 🤔"我不确定"分支、🧭参考卡、🫁暂停都是Should项，这里先不做，见DEV_PLAN.md。
+// 阶段2/3 + 场景化改造：决策模块。
+// 流程：在模拟界面里做出动作(不是选抽象选项) → 输入理由 → 调用/api/get-feedback获取反馈 → 下一步
+// 🤔"我不确定"求助选项、🧭参考卡、🫁暂停都是Should项，这里先不做，见DEV_PLAN.md。
 
-type Step = "select" | "reason" | "submitting" | "feedback";
+type Step = "scene" | "reason" | "submitting" | "feedback";
+
+// chapter.id → 对应的模拟界面场景组件。目前只有篇章①③接了真实场景，
+// 篇章②（Should项）还没做场景，暂时不会走到这个组件。
+const SCENES: Record<string, React.ComponentType<{ onChoose: (id: "safe" | "danger") => void }>> = {
+  chapter1: PhishingLoginScene,
+  chapter3: AccountLockedScene,
+};
 
 function fallbackFeedback(choiceId: string | undefined): string {
   return choiceId === "danger" ? story.fallback.danger : story.fallback.safe;
@@ -20,14 +29,16 @@ export function DecisionScreen({
   chapter: Chapter;
   onNext: (result: DecisionResult) => void;
 }) {
-  const [step, setStep] = useState<Step>("select");
+  const [step, setStep] = useState<Step>("scene");
   const [selected, setSelected] = useState<Option | null>(null);
   const [reason, setReason] = useState("");
   const [feedback, setFeedback] = useState("");
 
-  const decisionOptions = chapter.options.filter((o) => o.id !== "unsure");
+  const Scene = SCENES[chapter.id];
 
-  function selectOption(option: Option) {
+  function handleChoose(optionId: "safe" | "danger") {
+    const option = chapter.options.find((o) => o.id === optionId);
+    if (!option) return;
     setSelected(option);
     setStep("reason");
   }
@@ -66,27 +77,23 @@ export function DecisionScreen({
         {chapter.threatType}
       </span>
       <h1 className="max-w-lg text-2xl font-semibold">{chapter.title}</h1>
-      <p className="max-w-lg text-zinc-600">{chapter.scenario}</p>
 
-      {step === "select" && (
-        <div className="flex flex-col gap-3 sm:flex-row">
-          {decisionOptions.map((option) => (
-            <button
-              key={option.id}
-              onClick={() => selectOption(option)}
-              className="rounded-full border border-zinc-300 px-6 py-3 text-sm font-medium hover:bg-zinc-100"
-            >
-              {option.label}
-            </button>
-          ))}
-        </div>
+      {step === "scene" && (
+        <>
+          <p className="max-w-lg text-zinc-600">{chapter.scenario}</p>
+          {Scene ? (
+            <Scene onChoose={handleChoose} />
+          ) : (
+            <p className="text-sm text-red-500">
+              这个篇章还没接真实场景（缺 SCENES[{chapter.id}]）
+            </p>
+          )}
+        </>
       )}
 
       {(step === "reason" || step === "submitting") && selected && (
         <div className="flex w-full max-w-md flex-col gap-3">
-          <p className="text-sm text-zinc-500">
-            你选择了：&ldquo;{selected.label}&rdquo;
-          </p>
+          <p className="text-sm text-zinc-500">你刚才：{selected.label}</p>
           <textarea
             value={reason}
             onChange={(e) => setReason(e.target.value)}
