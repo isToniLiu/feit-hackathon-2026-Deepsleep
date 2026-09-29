@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { TopBar } from "@/components/TopBar";
 import { RoleSelectScreen } from "@/components/screens/RoleSelectScreen";
+import { RoleWorkspaceScreen } from "@/components/screens/RoleWorkspaceScreen";
 import { DashboardScreen } from "@/components/screens/DashboardScreen";
 import { BriefingScreen } from "@/components/screens/BriefingScreen";
 import { MentorScreen } from "@/components/screens/MentorScreen";
@@ -69,6 +70,9 @@ export default function Home() {
     <div className="flex flex-1 flex-col">
       <TopBar evidence={evidence} incidentStatus={incidentStatus} />
       {node.type === "roleSelect" && <RoleSelectScreen onSelect={selectRole} />}
+      {node.type === "roleWorkspace" && selectedRole && (
+        <RoleWorkspaceScreen roleId={selectedRole} onNext={goNext} />
+      )}
       {node.type === "dashboard" && <DashboardScreen onNext={goNext} />}
       {node.type === "briefing" && <BriefingScreen onNext={goNext} />}
       {node.type === "mentor" && (
@@ -96,6 +100,7 @@ export default function Home() {
           evidence={evidence}
           selectedRole={selectedRole}
           onRestart={restart}
+          onChooseRole={selectRole}
         />
       )}
     </div>
