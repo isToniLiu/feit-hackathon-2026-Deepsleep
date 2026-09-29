@@ -1,8 +1,17 @@
 "use client";
 
 import { useState, type ComponentType } from "react";
-import { story, getMentor, type Chapter, type DecisionResult, type Option } from "@/lib/story";
+import {
+  story,
+  getMentor,
+  type Chapter,
+  type DecisionResult,
+  type EvidenceItem,
+  type IncidentStatus,
+  type Option,
+} from "@/lib/story";
 import { PhishingLoginScene } from "./scenes/PhishingLoginScene";
+import { MaliciousFileScene } from "./scenes/MaliciousFileScene";
 import { AccountLockedScene } from "./scenes/AccountLockedScene";
 import { ChatPanel, type ChatMessage } from "@/components/chat/ChatPanel";
 
@@ -18,9 +27,9 @@ type SceneComponent = ComponentType<{
   onInvestigate: (note: string) => void;
 }>;
 
-// 目前只有篇章①③接了真实场景；篇章②(Should项)还没做，暂时不会走到这个组件。
 const SCENES: Record<string, SceneComponent> = {
   chapter1: PhishingLoginScene,
+  chapter2: MaliciousFileScene,
   chapter3: AccountLockedScene,
 };
 
@@ -36,17 +45,39 @@ function nextId(): string {
 
 export function DecisionScreen({
   chapter,
+  priorEvidence,
+  incidentStatus,
+  onEvidence,
   onNext,
 }: {
   chapter: Chapter;
+  priorEvidence: EvidenceItem[];
+  incidentStatus: IncidentStatus;
+  onEvidence: (text: string) => void;
   onNext: (result: DecisionResult) => void;
 }) {
   const mentor = getMentor(chapter.mentorId);
   const Scene = SCENES[chapter.id];
 
-  const [messages, setMessages] = useState<ChatMessage[]>(() => [
-    { id: nextId(), role: "mentor", text: mentor.line },
-  ]);
+  const [messages, setMessages] = useState<ChatMessage[]>(() => {
+    const context: ChatMessage[] = [{ id: nextId(), role: "mentor", text: mentor.line }];
+    if (chapter.continuityLine && priorEvidence.length > 0) {
+      context.push({
+        id: nextId(),
+        role: "system",
+        text: `CASE FILE UPDATE · ${priorEvidence.length} 条现场记录已带入当前节点`,
+      });
+      context.push({ id: nextId(), role: "mentor", text: chapter.continuityLine });
+    }
+    if (incidentStatus === "containment-risk") {
+      context.push({
+        id: nextId(),
+        role: "system",
+        text: "ALERT · 前一节点的处置仍存在扩散风险",
+      });
+    }
+    return context;
+  });
   const [pendingChoice, setPendingChoice] = useState<Option | null>(null);
   const [inputValue, setInputValue] = useState("");
   const [isSending, setIsSending] = useState(false);
@@ -60,6 +91,7 @@ export function DecisionScreen({
 
   function handleInvestigate(note: string) {
     appendMessage("system", note);
+    onEvidence(note);
   }
 
   function handleChoose(choiceId: SceneChoice) {
@@ -115,6 +147,10 @@ export function DecisionScreen({
   return (
     <div className="flex flex-1 flex-col overflow-hidden sm:flex-row">
       <div className="flex flex-1 flex-col items-center justify-center gap-4 overflow-y-auto p-6 text-center">
+        <div className="flex w-full max-w-lg items-center justify-between text-[10px] uppercase tracking-[0.16em] text-zinc-400">
+          <span>Live incident / {chapter.id.replace("chapter", "0")}</span>
+          <span>{priorEvidence.length} evidence logged</span>
+        </div>
         <span className="text-xs uppercase tracking-wide text-zinc-400">
           {chapter.threatType}
         </span>
@@ -143,7 +179,7 @@ export function DecisionScreen({
             }
             className="rounded-full bg-zinc-900 px-6 py-3 text-sm font-medium text-white hover:bg-zinc-700"
           >
-            下一步
+            继续调查
           </button>
         )}
       </div>
