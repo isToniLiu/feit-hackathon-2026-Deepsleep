@@ -1,6 +1,13 @@
 "use client";
 
 import { getMentor, getRole, story, type RoleId } from "@/lib/story";
+import Image from "next/image";
+
+const rolePortraits: Record<RoleId, string> = {
+  priya: "/role-assets/maya.png",
+  marcus: "/role-assets/alex.png",
+  aiko: "/role-assets/maya.png",
+};
 
 export function RoleWorkspaceScreen({
   roleId,
@@ -14,8 +21,16 @@ export function RoleWorkspaceScreen({
   const chapter = story.chapters.find((candidate) => candidate.mentorId === role.mentorId);
 
   return (
-    <main className="flex flex-1 flex-col justify-center bg-[#081321] px-5 py-10 text-zinc-100 sm:px-10">
-      <div className="mx-auto w-full max-w-6xl">
+    <main
+      className="relative flex flex-1 flex-col justify-center overflow-hidden bg-[#081321] px-5 py-10 text-zinc-100 sm:px-10"
+      style={{
+        backgroundImage:
+          "linear-gradient(90deg, rgba(7,19,33,.96), rgba(7,19,33,.74)), linear-gradient(0deg, #071321 0%, transparent 65%), url('/role-assets/operations-room.png')",
+        backgroundPosition: "center",
+        backgroundSize: "cover",
+      }}
+    >
+      <div className="relative z-10 mx-auto w-full max-w-6xl">
         <div className="mb-8 flex flex-wrap items-start justify-between gap-5">
           <div>
             <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-teal-300">IR-247 / investigation workspace</p>
@@ -64,6 +79,18 @@ export function RoleWorkspaceScreen({
             <div className="mt-6 rounded-lg border border-teal-300/30 bg-teal-300/5 p-4">
               <p className="text-xs font-semibold text-teal-200">远程支援已上线</p>
               <p className="mt-2 text-sm leading-6 text-slate-300">{mentor.line}</p>
+            </div>
+            <div className="relative mt-5 h-32 overflow-hidden rounded-lg border border-slate-600 bg-slate-900">
+              <Image
+                src={rolePortraits[roleId]}
+                alt="Northlight response team"
+                fill
+                sizes="(min-width: 1024px) 20vw, 90vw"
+                className="object-cover object-top opacity-70"
+              />
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#071321] to-transparent px-3 pb-3 pt-8">
+                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-teal-200">response room / online</p>
+              </div>
             </div>
           </aside>
         </div>
