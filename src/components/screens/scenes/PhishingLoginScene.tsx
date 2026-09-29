@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { BrowserShell, type BrowserPage } from "@/components/browser/BrowserShell";
 
-// 篇章①的"假界面"场景：浮在假EduFlow后台上的"Session Expired"重新登录弹窗。
-// 除了"拍板"的两个动作(Log In/上报)，现在还有：
-// - 调查类交互：点网址栏、悬停Log In按钮，能发现线索(通过onInvestigate记进侧边栏聊天)
-// - 第三个"不确定"动作：不算拍板，触发即时求助，玩家还能回来继续操作
+const pages: BrowserPage[] = [
+  { id: "admin", label: "EduFlow Admin", address: "eduflow-portal.com/admin" },
+  { id: "status", label: "Status Monitor", address: "status.eduflow-portal.com" },
+  { id: "support", label: "IT Support", address: "eduflow-portal.com/help/login" },
+];
 
 export function PhishingLoginScene({
   onChoose,
@@ -16,92 +18,250 @@ export function PhishingLoginScene({
 }) {
   const [urlInspected, setUrlInspected] = useState(false);
   const [linkNoticed, setLinkNoticed] = useState(false);
+  const [popupOpen, setPopupOpen] = useState(true);
+  const [statusVisited, setStatusVisited] = useState(false);
+  const [supportVisited, setSupportVisited] = useState(false);
   const [hoveringLogin, setHoveringLogin] = useState(false);
 
   function inspectUrl() {
-    if (!urlInspected) {
-      onInvestigate("🔍 你点开看了网址栏：eduflow-portal.com/admin");
-      setUrlInspected(true);
-    }
+    if (urlInspected) return;
+    onInvestigate("🔍 你检查了浏览器地址栏：eduflow-portal.com/admin");
+    setUrlInspected(true);
   }
 
   function noticeLoginLink() {
     setHoveringLogin(true);
-    if (!linkNoticed) {
-      onInvestigate("🔍 你留意到Log In按钮实际会提交到：eduflow-portal-auth.net/login");
-      setLinkNoticed(true);
+    if (linkNoticed) return;
+    onInvestigate("🔍 你查看了登录按钮的目标：eduflow-portal-auth.net/login");
+    setLinkNoticed(true);
+  }
+
+  function handleNavigate(pageId: string) {
+    if (pageId === "status" && !statusVisited) {
+      onInvestigate("🔍 你打开了官方状态页：身份验证服务从 23:47 开始降级");
+      setStatusVisited(true);
+    }
+    if (pageId === "support" && !supportVisited) {
+      onInvestigate("🔍 你打开了 IT 帮助页：正规登录入口是 eduflow-portal.com/login");
+      setSupportVisited(true);
     }
   }
 
   return (
-    <div className="relative w-full max-w-lg">
-      {/* 背后一层假后台，营造"你正在用EduFlow工作"的既视感 */}
-      <div className="rounded-lg border border-zinc-300 bg-zinc-50 p-4 opacity-50">
-        <div className="mb-3 flex items-center gap-2 border-b border-zinc-200 pb-2">
-          <div className="h-3 w-3 rounded-full bg-zinc-300" />
-          <div className="h-3 w-3 rounded-full bg-zinc-300" />
-          <div className="h-3 w-3 rounded-full bg-zinc-300" />
-          <span className="ml-2 text-xs text-zinc-400">eduflow-portal.com/admin</span>
-        </div>
-        <div className="h-4 w-1/3 rounded bg-zinc-200" />
-        <div className="mt-2 h-3 w-2/3 rounded bg-zinc-200" />
-        <div className="mt-2 h-3 w-1/2 rounded bg-zinc-200" />
+    <BrowserShell
+      pages={pages}
+      initialPage="admin"
+      onNavigate={handleNavigate}
+      onUnknownAddress={(address) => onInvestigate(`🔍 你尝试访问了未登记的地址：${address}`)}
+    >
+      {(pageId, navigate) => {
+        if (pageId === "status") {
+          return <StatusPage onInvestigate={onInvestigate} onNavigate={navigate} />;
+        }
+        if (pageId === "support") {
+          return <SupportPage onInvestigate={onInvestigate} onNavigate={navigate} />;
+        }
+
+        return (
+          <div className="relative min-h-[25rem] overflow-hidden bg-[#f8fafc]">
+            <div className="border-b border-zinc-200 bg-white px-5 py-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-semibold text-zinc-800">EduFlow Admin</p>
+                  <p className="text-[11px] text-zinc-400">Submission operations · Jordan</p>
+                </div>
+                <button
+                  onClick={() => navigate("status")}
+                  className="text-xs text-zinc-500 underline decoration-dotted hover:text-zinc-800"
+                >
+                  service status
+                </button>
+              </div>
+              <div className="mt-4 grid grid-cols-3 gap-2">
+                <div className="rounded border border-zinc-200 bg-zinc-50 p-3">
+                  <p className="text-[10px] uppercase text-zinc-400">Queue</p>
+                  <p className="mt-1 text-lg font-semibold">4,821</p>
+                </div>
+                <div className="rounded border border-amber-200 bg-amber-50 p-3">
+                  <p className="text-[10px] uppercase text-amber-600">Auth</p>
+                  <p className="mt-1 text-lg font-semibold text-amber-800">degraded</p>
+                </div>
+                <div className="rounded border border-zinc-200 bg-zinc-50 p-3">
+                  <p className="text-[10px] uppercase text-zinc-400">Workers</p>
+                  <p className="mt-1 text-lg font-semibold">98%</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-5">
+              <p className="text-xs font-medium text-zinc-500">Latest activity</p>
+              <div className="mt-2 flex items-center justify-between rounded border border-zinc-200 bg-white p-3 text-sm">
+                <span>Midnight submission burst detected</span>
+                <span className="font-mono text-[11px] text-zinc-400">23:47:02</span>
+              </div>
+              <p className="mt-4 text-xs leading-5 text-zinc-400">
+                这个后台看起来正常，但左上角的身份验证状态和你刚才看到的弹窗并不一定来自同一个系统。
+              </p>
+            </div>
+
+            {popupOpen ? (
+              <div className="absolute inset-x-8 top-10 rounded-lg border border-zinc-400 bg-white p-5 shadow-2xl sm:inset-x-16">
+                <div className="mb-3 flex items-start justify-between gap-3">
+                  <div>
+                    <p className="mb-1 text-sm font-semibold text-amber-600">⚠ Session Expired</p>
+                    <p className="text-xs text-zinc-500">EduFlow requires you to sign in again.</p>
+                  </div>
+                  <button
+                    onClick={() => setPopupOpen(false)}
+                    className="rounded px-2 text-lg leading-none text-zinc-400 hover:bg-zinc-100"
+                    aria-label="关闭登录提示"
+                  >
+                    ×
+                  </button>
+                </div>
+
+                <button
+                  onClick={inspectUrl}
+                  className="mb-3 block w-full rounded border border-dashed border-zinc-300 px-2 py-1 text-left text-xs text-zinc-500 underline decoration-dotted hover:bg-zinc-50"
+                >
+                  🔍 查看当前页面的完整地址
+                </button>
+                <label className="mb-1 block text-xs text-zinc-500">Email</label>
+                <input
+                  type="text"
+                  placeholder="jordan@northlight.dev"
+                  className="mb-3 w-full rounded border border-zinc-300 p-2 text-sm"
+                />
+                <label className="mb-1 block text-xs text-zinc-500">Password</label>
+                <input
+                  type="password"
+                  placeholder="••••••••"
+                  className="mb-2 w-full rounded border border-zinc-300 p-2 text-sm"
+                />
+
+                <button
+                  onClick={() => onChoose("danger")}
+                  onMouseEnter={noticeLoginLink}
+                  onFocus={noticeLoginLink}
+                  onMouseLeave={() => setHoveringLogin(false)}
+                  className="w-full rounded bg-zinc-900 py-2 text-sm font-medium text-white hover:bg-zinc-700"
+                >
+                  Log In
+                </button>
+                {hoveringLogin && (
+                  <p className="mt-1 text-[11px] text-red-500">
+                    → 目标地址：eduflow-portal-auth.net/login
+                  </p>
+                )}
+
+                <button
+                  onClick={() => onChoose("safe")}
+                  className="mt-3 w-full text-xs text-zinc-500 underline hover:text-zinc-700"
+                >
+                  这个弹窗看起来不对劲，上报它
+                </button>
+                <button
+                  onClick={() => onChoose("unsure")}
+                  className="mt-2 w-full text-xs text-zinc-400 hover:text-zinc-600"
+                >
+                  🤔 我不确定，能再讲清楚一点吗
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setPopupOpen(true)}
+                className="absolute bottom-4 right-4 rounded border border-amber-300 bg-amber-50 px-3 py-2 text-xs text-amber-800 shadow-sm hover:bg-amber-100"
+              >
+                1 条待处理通知 · Session expired
+              </button>
+            )}
+          </div>
+        );
+      }}
+    </BrowserShell>
+  );
+}
+
+function StatusPage({
+  onInvestigate,
+  onNavigate,
+}: {
+  onInvestigate: (note: string) => void;
+  onNavigate: (pageId: string) => void;
+}) {
+  return (
+    <div className="min-h-[25rem] bg-white p-5">
+      <div className="border-b border-zinc-200 pb-4">
+        <p className="text-sm font-semibold">EduFlow Status</p>
+        <p className="mt-1 text-xs text-zinc-400">Official service health · updated 23:49:12</p>
       </div>
-
-      {/* 浮在上面的假弹窗，这才是玩家真正要面对的东西 */}
-      <div className="absolute inset-x-4 top-8 rounded-lg border border-zinc-400 bg-white p-5 text-left shadow-xl">
-        <button
-          onClick={inspectUrl}
-          className="mb-2 block w-full rounded border border-dashed border-zinc-300 px-2 py-1 text-left text-xs text-zinc-400 underline decoration-dotted hover:bg-zinc-50"
-        >
-          🔍 eduflow-portal.com/admin — 点击查看完整网址
-        </button>
-
-        <p className="mb-1 text-sm font-semibold text-amber-600">⚠ Session Expired</p>
-        <p className="mb-4 text-sm text-zinc-600">
-          Your session has expired. Please sign in again to continue working on
-          EduFlow.
-        </p>
-        <label className="mb-1 block text-xs text-zinc-500">Email</label>
-        <input
-          type="text"
-          placeholder="jordan@northlight.dev"
-          className="mb-3 w-full rounded border border-zinc-300 p-2 text-sm"
-        />
-        <label className="mb-1 block text-xs text-zinc-500">Password</label>
-        <input
-          type="password"
-          placeholder="••••••••"
-          className="mb-2 w-full rounded border border-zinc-300 p-2 text-sm"
-        />
-
-        <button
-          onClick={() => onChoose("danger")}
-          onMouseEnter={noticeLoginLink}
-          onMouseLeave={() => setHoveringLogin(false)}
-          className="w-full rounded bg-zinc-900 py-2 text-sm font-medium text-white hover:bg-zinc-700"
-        >
-          Log In
-        </button>
-        {hoveringLogin && (
-          <p className="mt-1 text-[11px] text-zinc-400">
-            → 实际会提交到：eduflow-portal-auth.net/login
-          </p>
-        )}
-
-        <button
-          onClick={() => onChoose("safe")}
-          className="mt-3 w-full text-xs text-zinc-500 underline hover:text-zinc-700"
-        >
-          这个弹窗看起来不对劲，上报它
-        </button>
-        <button
-          onClick={() => onChoose("unsure")}
-          className="mt-2 w-full text-xs text-zinc-400 hover:text-zinc-600"
-        >
-          🤔 我不确定，能再讲清楚一点吗
-        </button>
+      <div className="mt-5 flex flex-col gap-2">
+        <StatusRow label="Submission API" value="Operational" tone="green" />
+        <StatusRow label="Authentication" value="Degraded performance" tone="amber" />
+        <StatusRow label="Background workers" value="Operational" tone="green" />
       </div>
+      <button
+        onClick={() => onInvestigate("🔍 官方状态页记录：身份验证服务降级，但没有要求用户重新输入密码")}
+        className="mt-5 rounded border border-dashed border-zinc-300 px-3 py-2 text-xs text-zinc-600 hover:bg-zinc-50"
+      >
+        查看身份验证事件详情
+      </button>
+      <button
+        onClick={() => onNavigate("support")}
+        className="mt-4 block text-xs text-zinc-500 underline decoration-dotted"
+      >
+        打开 IT 登录支持说明 →
+      </button>
+    </div>
+  );
+}
+
+function SupportPage({
+  onInvestigate,
+  onNavigate,
+}: {
+  onInvestigate: (note: string) => void;
+  onNavigate: (pageId: string) => void;
+}) {
+  return (
+    <div className="min-h-[25rem] bg-white p-5">
+      <p className="text-sm font-semibold">IT Access Support</p>
+      <p className="mt-1 text-xs text-zinc-400">Northlight internal help · Article AUTH-04</p>
+      <div className="mt-5 rounded border border-zinc-200 bg-zinc-50 p-4 text-sm leading-6 text-zinc-700">
+        <p className="font-medium">Session expired</p>
+        <p className="mt-2">如果 EduFlow 会话失效，请关闭异常窗口，再从公司书签进入登录页。</p>
+        <code className="mt-3 block rounded bg-white p-2 text-xs text-zinc-600">https://eduflow-portal.com/login</code>
+        <p className="mt-3 text-xs text-zinc-500">IT 不会通过弹窗要求你重新提交密码，也不会使用临时域名。</p>
+      </div>
+      <button
+        onClick={() => onInvestigate("🔍 IT 支持说明确认：公司登录入口是 eduflow-portal.com/login")}
+        className="mt-5 rounded bg-zinc-900 px-3 py-2 text-xs font-medium text-white hover:bg-zinc-700"
+      >
+        将这条说明加入案件档案
+      </button>
+      <button
+        onClick={() => onNavigate("admin")}
+        className="mt-4 block text-xs text-zinc-500 underline decoration-dotted"
+      >
+        返回 EduFlow 后台 →
+      </button>
+    </div>
+  );
+}
+
+function StatusRow({
+  label,
+  value,
+  tone,
+}: {
+  label: string;
+  value: string;
+  tone: "green" | "amber";
+}) {
+  return (
+    <div className="flex items-center justify-between rounded border border-zinc-200 px-3 py-3 text-sm">
+      <span>{label}</span>
+      <span className={tone === "green" ? "text-emerald-600" : "text-amber-600"}>● {value}</span>
     </div>
   );
 }
