@@ -10,7 +10,7 @@
 
 2026 FEIT Hackathon Festival，队伍 Deepsleep，3天极限开发赛。
 赛题：Untapped Talent Problem Statement ——「Engineering the Future of Learning」（Future Work主题）
-项目名 / 一句话简介：工作代号「DDL Lockdown」——情景决策式网络安全模拟游戏。玩家扮演软件公司Northlight Digital的实习生，公司自研的Canvas类平台「EduFlow」今晚遭遇攻击需紧急恢复，玩家在高压场景里做安全决策，AI读取玩家自己写下的判断理由并生成个性化教练反馈。完整背景见 [`PRD.md`](./PRD.md) 第1节。
+项目名 / 一句话简介：工作代号「DDL Lockdown」——面向零基础网络安全学习者的情景决策式模拟游戏。玩家扮演软件公司Northlight Digital的实习生，公司自研Canvas类平台「EduFlow」今晚遭遇攻击，玩家轮转协助三位不同岗位同事处理三类真实威胁（3篇章结构），AI读取玩家自己写下的判断理由并生成个性化教练反馈。完整背景见 [`PRD.md`](./PRD.md) 第1节。
 确定只做软件项目，不做硬件（3天时间有限）。
 
 ## 什么该交给AI，什么必须人工把关
