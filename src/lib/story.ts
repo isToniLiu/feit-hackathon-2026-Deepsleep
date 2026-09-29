@@ -33,6 +33,8 @@ export interface RoleProfile {
   description: string;
   focus: string;
   route: string;
+  mission: string;
+  tasks: string[];
 }
 
 export interface Story {

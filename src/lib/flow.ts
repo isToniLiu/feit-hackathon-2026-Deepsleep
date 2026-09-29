@@ -4,6 +4,7 @@ import { story, type RoleId } from "./story";
 
 export type FlowNode =
   | { type: "roleSelect" }
+  | { type: "roleWorkspace" }
   | { type: "dashboard" }
   | { type: "briefing" }
   | { type: "mentor"; chapterId: string }
@@ -27,6 +28,7 @@ export function buildFlow(roleId?: RoleId): FlowNode[] {
   }
 
   return [
+    { type: "roleWorkspace" },
     { type: "dashboard" },
     { type: "briefing" },
     { type: "chapter", chapterId: selectedChapterId },

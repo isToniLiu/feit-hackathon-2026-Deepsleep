@@ -29,7 +29,9 @@
       "label": "身份验证调查",
       "description": "从 EduFlow 后台和登录请求入手，确认异常来源是否可信。",
       "focus": "域名 · 状态页 · 凭据",
-      "route": "EduFlow Admin / Status Monitor"
+      "route": "EduFlow Admin / Status Monitor",
+      "mission": "确认异常登录请求是否可信，并为响应团队保留足够证据。",
+      "tasks": ["核对后台会话与登录提示", "记录域名、提交地址和时间线", "通过已知内部渠道报告异常"]
     },
     "marcus": {
       "mentorId": "marcus",
@@ -37,7 +39,9 @@
       "label": "可疑文件响应",
       "description": "跟进值班群里的修复工具，控制影响，同时保留后续调查需要的证据。",
       "focus": "文件 · 来源 · 时间线",
-      "route": "Incident Chat / File Preview"
+      "route": "Incident Chat / File Preview",
+      "mission": "确认紧急修复工具的来源，在扩大影响前控制它。",
+      "tasks": ["核对值班群发送者和消息时间", "查看文件名称与来源线索", "隔离文件并通过内部渠道上报"]
     },
     "aiko": {
       "mentorId": "aiko",
@@ -45,7 +49,9 @@
       "label": "账号流程核查",
       "description": "核对锁定和恢复流程，判断哪些信息可以提交、哪些动作必须正式上报。",
       "focus": "流程 · 授权 · 上报",
-      "route": "Identity Portal / Security Notices"
+      "route": "Identity Portal / Security Notices",
+      "mission": "判断账号锁定是否可信，并把恢复动作拉回正式流程。",
+      "tasks": ["核对锁定通知和验证要求", "区分必要信息与敏感凭据", "联系 IT 走官方恢复和上报流程"]
     }
   },
 

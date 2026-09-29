@@ -21,11 +21,13 @@ export function DebriefScreen({
   evidence,
   selectedRole,
   onRestart,
+  onChooseRole,
 }: {
   answers: Record<string, DecisionResult>;
   evidence: EvidenceItem[];
   selectedRole: RoleId | null;
   onRestart: () => void;
+  onChooseRole: (roleId: RoleId) => void;
 }) {
   const { debrief, mentors } = story;
   const role = selectedRole ? getRole(selectedRole) : null;
@@ -121,12 +123,25 @@ export function DebriefScreen({
 
       <div className="w-full max-w-md text-left">
         <h2 className="mb-2 font-semibold">{role ? "其他可调查的岗位视角" : debrief.rolesRecapTitle}</h2>
-        <ul className="flex flex-col gap-1 text-sm text-zinc-600">
+        <ul className="flex flex-col gap-2 text-sm text-zinc-600">
           {Object.keys(mentors).map((mentorId) => {
             const mentor = getMentor(mentorId);
+            const roleId = (Object.keys(story.roles) as RoleId[]).find(
+              (id) => story.roles[id].mentorId === mentorId,
+            );
+            const isCurrent = roleId === selectedRole;
             return (
-              <li key={mentorId}>
-                {mentor.name} · {mentor.role}
+              <li key={mentorId} className="flex items-center justify-between gap-3 rounded border border-zinc-200 p-3">
+                <span>{mentor.name} · {mentor.role}</span>
+                {roleId && !isCurrent && (
+                  <button
+                    onClick={() => onChooseRole(roleId)}
+                    className="shrink-0 rounded-full border border-zinc-300 px-3 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-100"
+                  >
+                    以此岗位重开
+                  </button>
+                )}
+                {isCurrent && <span className="shrink-0 text-xs text-zinc-400">当前视角</span>}
               </li>
             );
           })}

@@ -41,6 +41,7 @@ export function RoleSelectScreen({ onSelect }: { onSelect: (roleId: RoleId) => v
                 </span>
                 <strong className="mt-2 font-mono text-2xl font-semibold text-white">{role.label}</strong>
                 <span className="mt-3 text-sm leading-6 text-slate-300">{role.description}</span>
+                <span className="mt-4 text-[11px] uppercase tracking-[0.12em] text-slate-400">Focus · {role.focus}</span>
                 <span className="mt-auto pt-6 text-xs text-slate-400">
                   {mentor.name} · {role.route}
                   <span className="ml-2 text-teal-300 transition group-hover:ml-3">→</span>
