@@ -1,0 +1,99 @@
+{
+  "_comment": "剧情静态数据骨架，对应 DEV_PLAN.md 阶段0/1。文案先占位，P3定稿后替换 title/body/optionLabels 等字段值，不用改字段结构。",
+
+  "dashboard": {
+    "greeting": "Hey Jordan, welcome back.",
+    "incidentTitle": "INCIDENT — EduFlow Service Disruption",
+    "incidentSubtitle": "占位文案：今晚EduFlow服务出现异常，需要你加入应急支援。",
+    "actions": {
+      "primer": "30秒入门速览",
+      "skip": "跳过，我知道基本概念"
+    }
+  },
+
+  "briefing": {
+    "title": "威胁简报",
+    "body": "占位文案：今晚的攻击者是谁、图什么（机会主义攻击者专挑高负载/人手紧张的时间点下手）。",
+    "cta": "加入应急支援小组"
+  },
+
+  "mentors": {
+    "priya": {
+      "name": "Priya",
+      "role": "Security Analyst",
+      "line": "占位台词：Priya的自我介绍，1-2句。"
+    },
+    "marcus": {
+      "name": "Marcus",
+      "role": "Incident Responder",
+      "line": "占位台词：Marcus的自我介绍，1-2句。"
+    },
+    "aiko": {
+      "name": "Aiko",
+      "role": "GRC & Compliance Lead",
+      "line": "占位台词：Aiko的自我介绍，1-2句。"
+    }
+  },
+
+  "chapters": [
+    {
+      "id": "chapter1",
+      "mentorId": "priya",
+      "threatType": "phishing",
+      "title": "篇章① Credential Phishing",
+      "scenario": "占位文案：登录内部后台时弹出 “Session Expired” 假重新登录弹窗。",
+      "options": [
+        { "id": "safe", "label": "占位：安全选项文案" },
+        { "id": "danger", "label": "占位：危险选项文案" },
+        { "id": "unsure", "label": "🤔 我不确定，能再讲清楚一点吗" }
+      ]
+    },
+    {
+      "id": "chapter2",
+      "mentorId": "marcus",
+      "threatType": "malicious-file",
+      "title": "篇章② 恶意文件/仿冒社工",
+      "scenario": "占位文案：应急群里有人发来 fix_deploy_issue.exe，称是IT紧急修复工具。",
+      "options": [
+        { "id": "safe", "label": "占位：安全选项文案" },
+        { "id": "danger", "label": "占位：危险选项文案" },
+        { "id": "unsure", "label": "🤔 我不确定，能再讲清楚一点吗" }
+      ]
+    },
+    {
+      "id": "chapter3",
+      "mentorId": "aiko",
+      "threatType": "ransom-lockout",
+      "title": "篇章③ 勒索式账号锁定",
+      "scenario": "占位文案：弹出 “Account Locked — Verification Required” 要求填资料解锁。",
+      "options": [
+        { "id": "safe", "label": "占位：安全选项文案" },
+        { "id": "danger", "label": "占位：危险选项文案" },
+        { "id": "unsure", "label": "🤔 我不确定，能再讲清楚一点吗" }
+      ]
+    }
+  ],
+
+  "referenceCard": {
+    "phishing": ["占位速查步骤1", "占位速查步骤2", "占位速查步骤3"],
+    "malicious-file": ["占位速查步骤1", "占位速查步骤2", "占位速查步骤3"],
+    "ransom-lockout": ["占位速查步骤1", "占位速查步骤2", "占位速查步骤3"]
+  },
+
+  "debrief": {
+    "title": "今晚的表现",
+    "scoreLabel": "安全决策力评分",
+    "rolesRecapTitle": "今晚你体验过的三个岗位",
+    "flavorByTier": {
+      "high": "占位文案：高分档位反馈",
+      "mid": "占位文案：中等档位反馈",
+      "low": "占位文案：低分档位反馈"
+    }
+  },
+
+  "fallback": {
+    "safe": "占位兜底文案：AI暂时无法响应，这里是针对安全选项的预设反馈。",
+    "danger": "占位兜底文案：AI暂时无法响应，这里是针对危险选项的预设反馈。",
+    "unsure": "占位兜底文案：AI暂时无法响应，这里是针对“我不确定”的预设简化说明。"
+  }
+}
