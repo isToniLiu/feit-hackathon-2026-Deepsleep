@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { BrowserShell, type BrowserPage } from "@/components/browser/BrowserShell";
+import type { SceneAction } from "@/lib/story";
 
 const pages: BrowserPage[] = [
   { id: "chat", label: "Incident Response", address: "chat.northlight.dev/incident-response" },
@@ -11,10 +12,10 @@ const pages: BrowserPage[] = [
 
 export function MaliciousFileScene({
   onChoose,
-  onInvestigate,
+  onAction,
 }: {
   onChoose: (choice: "safe" | "danger" | "unsure") => void;
-  onInvestigate: (note: string) => void;
+  onAction: (action: SceneAction) => void;
 }) {
   const [senderInspected, setSenderInspected] = useState(false);
   const [fileInspected, setFileInspected] = useState(false);
@@ -22,19 +23,31 @@ export function MaliciousFileScene({
 
   function inspectSender() {
     if (senderInspected) return;
-    onInvestigate("🔍 你查看了发送者：Marcus 的内部账号列表里没有这个外部地址");
+    onAction({
+      summary: "你打开了发送者的账号信息",
+      explanation: "这个动作只查看消息来源，不会运行附件。内部账号目录里找不到这个地址，因此发送者身份还不能被信任。",
+      evidence: "🔍 你查看了发送者：Marcus 的内部账号列表里没有这个外部地址",
+    });
     setSenderInspected(true);
   }
 
   function inspectFile() {
     if (fileInspected) return;
-    onInvestigate("🔍 你打开了文件详情：fix_deploy_issue.exe 没有签名，创建时间早于这条消息");
+    onAction({
+      summary: "你打开了 fix_deploy_issue.exe 的文件预览",
+      explanation: "文件预览只读取元数据，不会运行程序。你可以先检查签名、创建时间和发送时间之间是否有矛盾。",
+      evidence: "🔍 你打开了文件详情：fix_deploy_issue.exe 没有签名，创建时间早于这条消息",
+    });
     setFileInspected(true);
   }
 
   function inspectTimeline() {
     if (timelineVisited) return;
-    onInvestigate("🔍 事故时间线显示：身份验证异常发生两分钟后，修复工具才被发进值班群");
+    onAction({
+      summary: "你打开了 IR-247 事故时间线",
+      explanation: "时间线把前一篇章的身份验证异常和这条文件消息放在了同一条事件链里。顺序本身就是需要核对的线索。",
+      evidence: "🔍 事故时间线显示：身份验证异常发生两分钟后，修复工具才被发进值班群",
+    });
     setTimelineVisited(true);
   }
 
@@ -46,21 +59,26 @@ export function MaliciousFileScene({
         if (pageId === "file") inspectFile();
         if (pageId === "timeline") inspectTimeline();
       }}
-      onUnknownAddress={(address) => onInvestigate(`🔍 你尝试访问了未登记的地址：${address}`)}
+      onUnknownAddress={(address) =>
+        onAction({
+          summary: `你尝试访问了未登记的地址：${address}`,
+          explanation: "这个地址不在当前模拟浏览器的内部书签中，页面没有被打开。",
+        })
+      }
     >
       {(pageId, navigate) => {
         if (pageId === "file") {
           return (
             <FilePreviewPage
               inspected={fileInspected}
-              onInvestigate={inspectFile}
+              onAction={inspectFile}
               onNavigate={navigate}
               onChoose={onChoose}
             />
           );
         }
         if (pageId === "timeline") {
-          return <TimelinePage onInvestigate={inspectTimeline} onNavigate={navigate} />;
+          return <TimelinePage onAction={inspectTimeline} onNavigate={navigate} />;
         }
 
         return (
@@ -130,12 +148,12 @@ export function MaliciousFileScene({
 
 function FilePreviewPage({
   inspected,
-  onInvestigate,
+  onAction,
   onNavigate,
   onChoose,
 }: {
   inspected: boolean;
-  onInvestigate: () => void;
+  onAction: () => void;
   onNavigate: (pageId: string) => void;
   onChoose: (choice: "safe" | "danger" | "unsure") => void;
 }) {
@@ -155,7 +173,7 @@ function FilePreviewPage({
         <Metadata label="Sent" value="23:49:03" />
       </div>
       <button
-        onClick={onInvestigate}
+        onClick={onAction}
         className="mt-5 rounded border border-dashed border-zinc-300 px-3 py-2 text-xs text-zinc-700 hover:bg-zinc-50"
       >
         {inspected ? "已将文件元数据加入案件档案" : "检查文件签名"}
@@ -172,10 +190,10 @@ function FilePreviewPage({
 }
 
 function TimelinePage({
-  onInvestigate,
+  onAction,
   onNavigate,
 }: {
-  onInvestigate: () => void;
+  onAction: () => void;
   onNavigate: (pageId: string) => void;
 }) {
   return (
@@ -188,7 +206,7 @@ function TimelinePage({
         <TimelineRow time="23:49:03" text="fix_deploy_issue.exe posted by external sender" />
       </div>
       <button
-        onClick={onInvestigate}
+        onClick={onAction}
         className="mt-5 rounded border border-zinc-300 px-3 py-2 text-xs text-zinc-700 hover:bg-zinc-50"
       >
         标记时间线关联

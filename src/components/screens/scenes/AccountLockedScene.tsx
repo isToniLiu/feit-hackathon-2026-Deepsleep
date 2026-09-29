@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { BrowserShell, type BrowserPage } from "@/components/browser/BrowserShell";
+import type { SceneAction } from "@/lib/story";
 
 const pages: BrowserPage[] = [
   { id: "identity", label: "Identity Portal", address: "accounts.northlight.dev/locked" },
@@ -11,10 +12,10 @@ const pages: BrowserPage[] = [
 
 export function AccountLockedScene({
   onChoose,
-  onInvestigate,
+  onAction,
 }: {
   onChoose: (choice: "safe" | "danger" | "unsure") => void;
-  onInvestigate: (note: string) => void;
+  onAction: (action: SceneAction) => void;
 }) {
   const [tipShown, setTipShown] = useState(false);
   const [linkNoticed, setLinkNoticed] = useState(false);
@@ -24,24 +25,40 @@ export function AccountLockedScene({
 
   function showTip() {
     if (tipShown) return;
-    onInvestigate("🔍 你打开了字段说明：正规 IT 流程不会在锁定提示里直接索要验证码");
+    onAction({
+      summary: "你打开了 Employee ID 字段说明",
+      explanation: "这个动作只查看页面提供的说明，不会提交账号信息。说明内容和公司正式恢复流程是否一致，是值得核对的线索。",
+      evidence: "🔍 你打开了字段说明：正规 IT 流程不会在锁定提示里直接索要验证码",
+    });
     setTipShown(true);
   }
 
   function noticeVerifyLink() {
     setHoveringVerify(true);
     if (linkNoticed) return;
-    onInvestigate("🔍 你查看了验证按钮的目标：secure-verify-eduflow.net");
+    onAction({
+      summary: "你查看了 Verify & Unlock 按钮的目标地址",
+      explanation: "按钮指向 secure-verify-eduflow.net，而不是 Northlight 的账号域名。你还没有提交验证码，但已经发现了一个高风险差异。",
+      evidence: "🔍 你查看了验证按钮的目标：secure-verify-eduflow.net",
+    });
     setLinkNoticed(true);
   }
 
   function handleNavigate(pageId: string) {
     if (pageId === "help" && !helpVisited) {
-      onInvestigate("🔍 你打开了 IT Access Help：账号锁定应通过工单恢复，不会要求提交验证码");
+      onAction({
+        summary: "你打开了 IT Access Help",
+        explanation: "你离开了可疑的账号恢复页面，去查看公司的正式处理流程。这里的说明可以和当前表单逐项对照。",
+        evidence: "🔍 你打开了 IT Access Help：账号锁定应通过工单恢复，不会要求提交验证码",
+      });
       setHelpVisited(true);
     }
     if (pageId === "notices" && !noticesVisited) {
-      onInvestigate("🔍 你打开了内部安全公告：23:47 的异常登录事件仍在调查中");
+      onAction({
+        summary: "你打开了内部 Security Notices",
+        explanation: "公告把当前账号锁定放回 IR-247 的时间线里。你现在可以比较它和前面身份验证、文件消息的时间关系。",
+        evidence: "🔍 你打开了内部安全公告：23:47 的异常登录事件仍在调查中",
+      });
       setNoticesVisited(true);
     }
   }
@@ -51,14 +68,19 @@ export function AccountLockedScene({
       pages={pages}
       initialPage="identity"
       onNavigate={handleNavigate}
-      onUnknownAddress={(address) => onInvestigate(`🔍 你尝试访问了未登记的地址：${address}`)}
+      onUnknownAddress={(address) =>
+        onAction({
+          summary: `你尝试访问了未登记的地址：${address}`,
+          explanation: "这个地址不在当前模拟浏览器的内部书签中，页面没有被打开。",
+        })
+      }
     >
       {(pageId, navigate) => {
         if (pageId === "help") {
-          return <AccessHelpPage onInvestigate={onInvestigate} onNavigate={navigate} />;
+          return <AccessHelpPage onAction={onAction} onNavigate={navigate} />;
         }
         if (pageId === "notices") {
-          return <NoticesPage onInvestigate={onInvestigate} onNavigate={navigate} />;
+          return <NoticesPage onAction={onAction} onNavigate={navigate} />;
         }
 
         return (
@@ -144,10 +166,10 @@ export function AccountLockedScene({
 }
 
 function AccessHelpPage({
-  onInvestigate,
+  onAction,
   onNavigate,
 }: {
-  onInvestigate: (note: string) => void;
+  onAction: (action: SceneAction) => void;
   onNavigate: (pageId: string) => void;
 }) {
   return (
@@ -160,7 +182,13 @@ function AccessHelpPage({
         <p className="mt-3 text-xs text-zinc-500">正常处理时长：5–15 分钟。不会要求你绕过工单流程“立即解锁”。</p>
       </div>
       <button
-        onClick={() => onInvestigate("🔍 IT 帮助中心确认：账号锁定应创建工单，不提交手机验证码")}
+        onClick={() =>
+          onAction({
+            summary: "你把 IT 账号恢复流程加入案件档案",
+            explanation: "帮助中心确认账号锁定应通过工单处理，不会要求员工在锁定页面提交手机验证码。",
+            evidence: "🔍 IT 帮助中心确认：账号锁定应创建工单，不提交手机验证码",
+          })
+        }
         className="mt-5 rounded bg-zinc-900 px-3 py-2 text-xs font-medium text-white hover:bg-zinc-700"
       >
         将这条流程加入案件档案
@@ -176,10 +204,10 @@ function AccessHelpPage({
 }
 
 function NoticesPage({
-  onInvestigate,
+  onAction,
   onNavigate,
 }: {
-  onInvestigate: (note: string) => void;
+  onAction: (action: SceneAction) => void;
   onNavigate: (pageId: string) => void;
 }) {
   return (
@@ -192,7 +220,13 @@ function NoticesPage({
         <p className="mt-3 font-mono text-[11px] text-amber-800">IR-247 · owner: Security Operations</p>
       </div>
       <button
-        onClick={() => onInvestigate("🔍 内部公告将账号锁定与 23:47 身份验证事件关联到同一案件 IR-247")}
+        onClick={() =>
+          onAction({
+            summary: "你标记了 IR-247 安全公告",
+            explanation: "公告把账号锁定与 23:47 的身份验证事件关联起来。这个动作让前后篇章的时间线更完整。",
+            evidence: "🔍 内部公告将账号锁定与 23:47 身份验证事件关联到同一案件 IR-247",
+          })
+        }
         className="mt-5 rounded border border-zinc-300 px-3 py-2 text-xs text-zinc-700 hover:bg-zinc-50"
       >
         标记这条公告

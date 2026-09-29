@@ -91,6 +91,14 @@ export function DebriefScreen({
                   你的选择：{answer.choiceLabel}
                 </p>
                 <p className="text-zinc-500">你的理由：{answer.reason}</p>
+                <details className="mt-2">
+                  <summary className="cursor-pointer text-xs text-zinc-500">查看行动记录（{answer.actionHistory.length}）</summary>
+                  <ol className="mt-2 flex list-decimal flex-col gap-1 pl-4 text-xs text-zinc-500">
+                    {answer.actionHistory.map((action) => (
+                      <li key={action}>{action}</li>
+                    ))}
+                  </ol>
+                </details>
                 <p className="mt-1">{answer.feedback}</p>
               </li>
             );
