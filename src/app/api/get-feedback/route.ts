@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { story } from "@/lib/story";
+import OpenAI from "openai";
+import { getChapter, getMentor, story } from "@/lib/story";
 
 // 统一响应格式，见 AGENTS.md：{ success, data, error }
 
@@ -13,12 +14,64 @@ function fallbackFeedback(choice: string | undefined): string {
   return choice === "danger" ? story.fallback.danger : story.fallback.safe;
 }
 
-// 阶段3先返回假回复(fallback文案)，把接口形状和兜底机制跑通；
-// 阶段4会把这个函数内部换成真实LLM调用(Claude/OpenAI API)，
-// 调用方(DecisionScreen)和这个route的接口形状都不需要变。
-// eslint-disable-next-line @typescript-eslint/no-unused-vars -- 阶段4会用上这两个参数(prompt上下文)
-async function generateFeedback(_chapterId: string, choice: string, _reason: string): Promise<string> {
-  return fallbackFeedback(choice);
+const openai = process.env.OPENAI_API_KEY
+  ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+  : null;
+
+// 阶段4：真实LLM调用(OpenAI，见AGENTS.md"技术栈"二选一原则，团队先申请到了OpenAI的Key)。
+// 把"剧情节点上下文 + 玩家选项 + 玩家输入的理由"打包进prompt，生成针对性反馈。
+async function generateFeedback(
+  chapterId: string,
+  choice: string,
+  reason: string,
+): Promise<string> {
+  if (!openai) {
+    // 没配Key时直接走兜底，不发起网络请求。
+    throw new Error("OPENAI_API_KEY未配置");
+  }
+
+  const chapter = getChapter(chapterId);
+  if (!chapter) {
+    throw new Error(`未知的chapterId: ${chapterId}`);
+  }
+  const mentor = getMentor(chapter.mentorId);
+  const option = chapter.options.find((o) => o.id === choice);
+
+  const systemPrompt = `你是网络安全事故演练游戏"DDL Lockdown"里的教练AI。
+你的任务：根据学员在决策点的选择和填写的理由，给出简短(2-4句话)、有针对性的教练式反馈。
+要求：
+- 反馈必须真实回应学员输入的具体理由内容，不能是无论输入什么都一样的通用模板
+- 语气专业但不羞辱；即使学员选择了有风险的应对方式，也要给出建设性、鼓励式的纠正，不指责
+- 专业术语（如phishing、GRC等）只能在反馈里顺带出现，不能假设学员已经懂
+- 直接用第二人称"你"称呼学员
+- 不要出现"作为AI"之类的免责声明
+- 用中文回复`;
+
+  const userPrompt = `场景：${chapter.title} —— ${chapter.scenario}
+带教同事：${mentor?.name ?? "同事"}（${mentor?.role ?? ""}）
+学员选择了："${option?.label ?? choice}"（这是${choice === "danger" ? "存在风险" : "安全"}的应对方式）
+学员填写的理由："${reason}"
+
+请针对这个具体理由生成反馈。`;
+
+  const completion = await openai.chat.completions.create(
+    {
+      model: "gpt-4o-mini",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt },
+      ],
+      max_tokens: 220,
+      temperature: 0.7,
+    },
+    { timeout: 8000 },
+  );
+
+  const feedback = completion.choices[0]?.message?.content?.trim();
+  if (!feedback) {
+    throw new Error("LLM返回空内容");
+  }
+  return feedback;
 }
 
 export async function POST(request: Request) {
@@ -43,8 +96,9 @@ export async function POST(request: Request) {
   try {
     const feedback = await generateFeedback(chapterId, choice, reason);
     return NextResponse.json({ success: true, data: { feedback }, error: null });
-  } catch {
-    // 兜底机制（Must项）：调用失败/超时时返回预设文案，不让前端卡死。
+  } catch (err) {
+    // 兜底机制（Must项）：调用失败/超时/未配Key时返回预设文案，不让前端卡死。
+    console.error("generateFeedback失败，已启用兜底文案：", err);
     return NextResponse.json({
       success: true,
       data: { feedback: fallbackFeedback(choice) },
