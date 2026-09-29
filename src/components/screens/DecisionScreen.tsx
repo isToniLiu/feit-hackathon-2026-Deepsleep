@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { story, type Chapter, type Option } from "@/lib/story";
+import { story, type Chapter, type DecisionResult, type Option } from "@/lib/story";
 
 // 阶段2/3：决策模块。
 // 流程：选选项(安全/危险) → 输入理由 → 调用/api/get-feedback获取反馈 → 下一步
@@ -18,7 +18,7 @@ export function DecisionScreen({
   onNext,
 }: {
   chapter: Chapter;
-  onNext: () => void;
+  onNext: (result: DecisionResult) => void;
 }) {
   const [step, setStep] = useState<Step>("select");
   const [selected, setSelected] = useState<Option | null>(null);
@@ -111,7 +111,15 @@ export function DecisionScreen({
             {feedback}
           </div>
           <button
-            onClick={onNext}
+            onClick={() =>
+              selected &&
+              onNext({
+                choiceId: selected.id,
+                choiceLabel: selected.label,
+                reason,
+                feedback,
+              })
+            }
             className="self-center rounded-full bg-zinc-900 px-6 py-3 text-sm font-medium text-white hover:bg-zinc-700"
           >
             下一步
