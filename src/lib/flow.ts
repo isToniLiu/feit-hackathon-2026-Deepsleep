@@ -16,10 +16,17 @@ export type FlowNode =
 export const DECISION_ENABLED_CHAPTER_IDS = ["chapter1", "chapter3"];
 
 export function buildFlow(): FlowNode[] {
-  const chapterNodes = story.chapters.flatMap<FlowNode>((chapter) => [
-    { type: "mentor", chapterId: chapter.id },
-    { type: "chapter", chapterId: chapter.id },
-  ]);
+  // 决策已启用的篇章(①③)现在把带教同事做成贯穿全程的侧边栏聊天角色，
+  // 不再需要单独一屏"自我介绍"——mentor的开场白直接在DecisionScreen里的聊天窗口出现。
+  // 篇章②还没做场景化，继续走旧的"mentor介绍屏 + 占位chapter屏"两步。
+  const chapterNodes = story.chapters.flatMap<FlowNode>((chapter) =>
+    DECISION_ENABLED_CHAPTER_IDS.includes(chapter.id)
+      ? [{ type: "chapter", chapterId: chapter.id }]
+      : [
+          { type: "mentor", chapterId: chapter.id },
+          { type: "chapter", chapterId: chapter.id },
+        ],
+  );
 
   return [
     { type: "dashboard" },
