@@ -2,8 +2,8 @@
   "_comment": "Northlight Digital内部事故档案：文案和线索都属于虚构演练内容，不连接真实公司或系统。",
 
   "dashboard": {
-    "greeting": "Hey Jordan, welcome back.",
-    "incidentTitle": "INCIDENT — EduFlow Service Disruption",
+    "greeting": "Jordan，欢迎回来。",
+    "incidentTitle": "事故：EduFlow 服务中断",
     "incidentSubtitle": "今晚 23:47，EduFlow 的身份验证服务开始出现异常。应急频道已经把你加入值班名单。",
     "actions": {
       "primer": "30秒入门速览",
@@ -25,43 +25,43 @@
   "roles": {
     "priya": {
       "mentorId": "priya",
-      "type": "SECURITY ANALYST",
+      "type": "安全分析师",
       "label": "身份验证调查",
       "description": "从 EduFlow 后台和登录请求入手，确认异常来源是否可信。",
       "focus": "域名 · 状态页 · 凭据",
-      "route": "EduFlow Admin / Status Monitor",
+      "route": "EduFlow 后台 / 状态监控",
       "mission": "确认异常登录请求是否可信，并为响应团队保留足够证据。",
       "tasks": [
-        { "label": "核对后台会话与登录提示", "hint": "可以点击地址栏、Session Expired 弹窗和登录按钮，先确认它们分别指向哪里。" },
-        { "label": "记录域名、提交地址和时间线", "hint": "打开 Status Monitor 或 IT Support，把独立来源加入案件档案。" },
+        { "label": "核对后台会话与登录提示", "hint": "可以点击地址栏、“会话已失效”弹窗和登录按钮，先确认它们分别指向哪里。" },
+        { "label": "记录域名、提交地址和时间线", "hint": "打开“状态监控”或“IT 支持”，把独立来源加入案件档案。" },
         { "label": "通过已知内部渠道报告异常", "hint": "调查完成后，在右侧聊天里告诉 Priya 你的处置和判断依据。" }
       ]
     },
     "marcus": {
       "mentorId": "marcus",
-      "type": "INCIDENT RESPONDER",
+      "type": "事件响应员",
       "label": "可疑文件响应",
       "description": "跟进值班群里的修复工具，控制影响，同时保留后续调查需要的证据。",
       "focus": "文件 · 来源 · 时间线",
-      "route": "Incident Chat / File Preview",
+      "route": "事件值班群 / 文件预览",
       "mission": "确认紧急修复工具的来源，在扩大影响前控制它。",
       "tasks": [
         { "label": "核对值班群发送者和消息时间", "hint": "点击发送者账号和事故时间线，确认消息是不是来自可信的内部来源。" },
-        { "label": "查看文件名称与来源线索", "hint": "打开 File preview，只查看签名、创建时间和发送时间，不要运行文件。" },
+        { "label": "查看文件名称与来源线索", "hint": "打开“文件预览”，只查看签名、创建时间和发送时间，不要运行文件。" },
         { "label": "隔离文件并通过内部渠道上报", "hint": "调查完成后，在右侧聊天里说明你会如何控制文件影响。" }
       ]
     },
     "aiko": {
       "mentorId": "aiko",
-      "type": "GRC & COMPLIANCE LEAD",
+      "type": "治理、风险与合规负责人",
       "label": "账号流程核查",
       "description": "核对锁定和恢复流程，判断哪些信息可以提交、哪些动作必须正式上报。",
       "focus": "流程 · 授权 · 上报",
-      "route": "Identity Portal / Security Notices",
+      "route": "身份门户 / 安全公告",
       "mission": "判断账号锁定是否可信，并把恢复动作拉回正式流程。",
       "tasks": [
-        { "label": "核对锁定通知和验证要求", "hint": "可以查看 Verify & Unlock 的目标地址、字段说明和安全公告。" },
-        { "label": "区分必要信息与敏感凭据", "hint": "打开 IT Access Help，对照正式恢复流程是否会要求提交验证码。" },
+        { "label": "核对锁定通知和验证要求", "hint": "可以查看“验证并立即解锁”按钮的目标地址、字段说明和安全公告。" },
+        { "label": "区分必要信息与敏感凭据", "hint": "打开“IT 访问帮助”，对照正式恢复流程是否会要求提交验证码。" },
         { "label": "联系 IT 走官方恢复和上报流程", "hint": "调查完成后，在右侧聊天里说明哪些资料可以提交、哪些动作必须上报。" }
       ]
     }
@@ -70,17 +70,17 @@
   "mentors": {
     "priya": {
       "name": "Priya",
-      "role": "Security Analyst",
+      "role": "安全分析师",
       "line": "我是 Priya，今晚负责盯身份验证和异常登录。你不用马上相信任何弹窗；先把你看到的证据留在案件档案里，我们一起判断。"
     },
     "marcus": {
       "name": "Marcus",
-      "role": "Incident Responder",
+      "role": "事件响应员",
       "line": "Marcus 在这里。我负责处理已经进入系统的可疑东西。刚才有人把“紧急修复工具”发进了值班群，先别运行，我们要确认它从哪里来。"
     },
     "aiko": {
       "name": "Aiko",
-      "role": "GRC & Compliance Lead",
+      "role": "治理、风险与合规负责人",
       "line": "我是 Aiko，负责把事故拉回正式流程。账号被锁定时最危险的往往不是锁定本身，而是有人利用焦虑让你绕过验证和上报渠道。"
     }
   },
@@ -89,9 +89,37 @@
     {
       "id": "chapter1",
       "mentorId": "priya",
-      "threatType": "INCIDENT 01 / AUTHENTICATION",
+      "threatType": "事件 01 / 身份验证",
+      "difficulty": "beginner",
+      "attackType": "凭据钓鱼 / 身份验证伪造",
       "title": "后台会话突然失效",
-      "scenario": "你正在检查 EduFlow 的提交队列。一个没有出现在值班记录里的“Session Expired”窗口盖住了后台。",
+      "scenario": "你正在检查 EduFlow 的提交队列。一个没有出现在值班记录里的“会话已失效”窗口盖住了后台。",
+      "evidence": [
+        { "id": "current-url", "label": "当前地址栏", "detail": "EduFlow 后台当前地址是 eduflow-portal.com/admin。", "teachingPointIds": ["check-domain", "not-in-roster"] },
+        { "id": "login-target", "label": "登录按钮目标", "detail": "“登录”按钮实际指向 eduflow-portal-auth.net/login。", "teachingPointIds": ["check-domain", "no-creds-in-popup"] },
+        { "id": "status-record", "label": "官方状态页", "detail": "官方状态页记录身份验证服务降级，但没有要求重新输入密码。", "teachingPointIds": ["not-in-roster"] },
+        { "id": "support-process", "label": "IT 正式流程", "detail": "公司登录入口是 eduflow-portal.com/login，IT 不会使用临时域名。", "teachingPointIds": ["report-internal"] }
+      ],
+      "hints": [
+        { "level": 1, "text": "先查看这个登录提示从哪里出现。" },
+        { "level": 2, "text": "检查登录按钮提交到哪个地址，并对照值班记录。" },
+        { "level": 3, "text": "把弹窗的提交地址与官方 EduFlow 登录入口进行比较。" }
+      ],
+      "teachingPoints": [
+        { "id": "check-domain", "text": "登录按钮实际提交到 eduflow-portal-auth.net/login，而不是公司官方入口 eduflow-portal.com/login", "keywords": ["域名", "网址", "地址", "链接", "domain", "eduflow-portal-auth"] },
+        { "id": "no-creds-in-popup", "text": "不要在突然出现的弹窗里输入账号密码", "keywords": ["密码", "凭据", "弹窗", "登录", "password", "credential", "popup"] },
+        { "id": "not-in-roster", "text": "这个“会话已失效”窗口没有出现在值班记录里，是未经确认的来源", "keywords": ["值班记录", "来源", "会话已失效", "session expired", "roster", "source"] },
+        { "id": "report-internal", "text": "通过已知的内部渠道上报，而不是自己处理", "keywords": ["上报", "内部", "IT", "报告", "report", "internal"] }
+      ],
+      "outcome": {
+        "safe": "Priya 在 2 分钟内拉黑了该域名，阻止了凭据外泄。",
+        "danger": "你输入的凭据已被发送到外部域名，攻击者获得了一个有效的值班账号。"
+      },
+      "followUp": {
+        "safe": "把真实提交地址和可疑域名写进内部报告，并说明你没有提交凭据。",
+        "danger": "停止继续输入信息，保留弹窗和地址证据，立即通过已知内部渠道报告凭据暴露风险。",
+        "unsure": "下一步只核对来源、提交地址和官方流程，不要在弹窗里输入任何凭据。"
+      },
       "options": [
         { "id": "safe", "label": "上报了这个可疑的重新登录弹窗" },
         { "id": "danger", "label": "在弹窗里输入了账号密码重新登录" },
@@ -101,9 +129,37 @@
     {
       "id": "chapter2",
       "mentorId": "marcus",
-      "threatType": "INCIDENT 02 / FILE DELIVERY",
+      "threatType": "事件 02 / 文件投递",
+      "difficulty": "intermediate",
+      "attackType": "恶意文件 / 紧急诱导",
       "title": "值班群里的紧急修复工具",
       "scenario": "身份验证异常还没有结束，值班群里有人发来 fix_deploy_issue.exe，声称它能修复刚才的部署问题。消息来自一个你不认识的外部账号。",
+      "evidence": [
+        { "id": "sender-directory", "label": "发送者目录", "detail": "it-helpdesk-temp 不在 Marcus 的内部账号目录中，邮箱使用外部域名。", "teachingPointIds": ["unknown-sender"] },
+        { "id": "file-metadata", "label": "文件元数据", "detail": "fix_deploy_issue.exe 没有可验证签名，创建时间早于消息发送时间。", "teachingPointIds": ["exe-from-chat"] },
+        { "id": "incident-timeline", "label": "事故时间线", "detail": "文件在身份验证异常两分钟后发进值班群，发送者要求立即运行。", "teachingPointIds": ["urgency-pressure"] },
+        { "id": "containment-process", "label": "隔离流程", "detail": "先隔离并保留原始文件信息，再通过内部渠道上报。", "teachingPointIds": ["isolate-and-report"] }
+      ],
+      "hints": [
+        { "level": 1, "text": "先查看是谁发送了这个文件。" },
+        { "level": 2, "text": "确认发送者是否在内部目录，再检查文件名和类型。" },
+        { "level": 3, "text": "把发送者、文件类型和消息时间放在一起核对，不要运行文件。" }
+      ],
+      "teachingPoints": [
+        { "id": "unknown-sender", "text": "发送者是不认识、且不在 Marcus 内部账号目录中的外部账号", "keywords": ["发送者", "外部", "陌生", "账号", "sender", "external", "unknown"] },
+        { "id": "exe-from-chat", "text": "在值班群里收到没有签名的可执行文件 fix_deploy_issue.exe，本身就是高风险信号", "keywords": ["exe", "可执行", "文件", "附件", "签名", "executable", "attachment", "unsigned"] },
+        { "id": "urgency-pressure", "text": "对方声称文件能修复部署问题，利用事故压力催促你立即运行", "keywords": ["紧急", "立即", "修复", "催促", "压力", "urgency", "immediately", "fix"] },
+        { "id": "isolate-and-report", "text": "先隔离、保留原始信息，再走内部渠道上报", "keywords": ["隔离", "保留", "上报", "内部", "quarantine", "preserve", "report"] }
+      ],
+      "outcome": {
+        "safe": "Marcus 在沙箱中分析了文件，确认它会回连外部服务器，已阻断。",
+        "danger": "文件在你的机器上运行，攻击者获得了内网的一个立足点。"
+      },
+      "followUp": {
+        "safe": "保留发送者、文件签名和时间线证据，并在内部渠道说明文件已隔离。",
+        "danger": "不要再次运行文件；保留原始文件与发送者信息，立即隔离设备并上报。",
+        "unsure": "下一步只查看发送者、文件元数据和时间线，不要打开或运行附件。"
+      },
       "continuityLine": "我看到了你在第一起事件里标记的可疑登录域名。这个文件就是在那次弹窗出现后两分钟发进群里的，先把它当成同一条事件链处理。",
       "options": [
         { "id": "safe", "label": "隔离文件并通过内部渠道上报" },
@@ -114,9 +170,37 @@
     {
       "id": "chapter3",
       "mentorId": "aiko",
-      "threatType": "INCIDENT 03 / ACCOUNT CONTROL",
+      "threatType": "事件 03 / 账号控制",
+      "difficulty": "intermediate",
+      "attackType": "账号接管 / 验证码诱导",
       "title": "账号被锁定，但谁在要求验证？",
       "scenario": "值班频道刚安静下来，你的 Northlight 账号突然被锁定。锁定提示要求你立即提交工号和手机验证码，才能恢复访问。",
+      "evidence": [
+        { "id": "verification-request", "label": "验证字段", "detail": "锁定页面要求提交工号和手机验证码，并用立即恢复访问制造压力。", "teachingPointIds": ["no-code-sharing", "urgency-pressure"] },
+        { "id": "verify-target", "label": "验证按钮目标", "detail": "“验证并立即解锁”按钮指向 secure-verify-eduflow.net。", "teachingPointIds": ["verify-official-channel"] },
+        { "id": "access-help", "label": "IT 访问帮助", "detail": "正式流程要求创建 IT 工单，不会在锁定页面索要手机验证码。", "teachingPointIds": ["no-code-sharing", "verify-official-channel"] },
+        { "id": "security-notice", "label": "内部安全公告", "detail": "公告将 23:47 的异常登录和本次锁定关联到 IR-247。", "teachingPointIds": ["link-to-earlier"] }
+      ],
+      "hints": [
+        { "level": 1, "text": "先看页面要求你提交哪些信息。" },
+        { "level": 2, "text": "确认它是否要求验证码，并查看验证按钮指向哪里。" },
+        { "level": 3, "text": "把验证码要求、页面地址和 IR-247 时间线放在一起比较。" }
+      ],
+      "teachingPoints": [
+        { "id": "no-code-sharing", "text": "锁定页面要求提交手机验证码，但正规 IT 流程不会在页面里索要验证码", "keywords": ["验证码", "代码", "OTP", "code", "verification"] },
+        { "id": "urgency-pressure", "text": "锁定提示用 restore access immediately 制造焦虑，催促你立刻验证", "keywords": ["立即", "恢复", "焦虑", "催促", "restore access", "immediately", "urgent"] },
+        { "id": "verify-official-channel", "text": "验证按钮指向 secure-verify-eduflow.net，应通过 IT 工单和官方渠道核实", "keywords": ["secure-verify", "IT", "工单", "官方", "verify", "official", "helpdesk"] },
+        { "id": "link-to-earlier", "text": "内部安全公告将这次锁定与 23:47 的身份验证事件关联到同一案件 IR-247", "keywords": ["23:47", "IR-247", "关联", "之前", "同一案件", "earlier", "incident"] }
+      ],
+      "outcome": {
+        "safe": "IT 确认这不是官方锁定，账号安全，Aiko 把三起事件合并归档。",
+        "danger": "你提交的工号和验证码被用来接管了账号，事故扩大到整个值班组。"
+      },
+      "followUp": {
+        "safe": "保留页面地址和安全公告证据，通过官方 IT 工单确认账号状态，不提交验证码。",
+        "danger": "停止提交更多信息，立即通过官方渠道联系 IT，并说明工号和验证码可能已暴露。",
+        "unsure": "下一步先核对页面地址、验证码要求和官方 IT 流程，不要提交敏感信息。"
+      },
       "continuityLine": "这次锁定发生在可疑文件消息之后。不要把它当成另一条孤立提醒：先核对它和前面两个域名、时间点是否对得上。",
       "options": [
         { "id": "safe", "label": "没有填资料，转而联系IT走官方流程" },
@@ -141,12 +225,65 @@
       "high": "你在压力下仍然愿意先核对来源、保留证据，再通过正式渠道行动。这个习惯正是事故响应中最有价值的第一道防线。",
       "mid": "你已经识别出部分危险信号，但在连续警报叠加时还容易被“立即处理”的节奏带着走。下一次，先把来源和提交地址写进案件档案。",
       "low": "这次事故里有几次请求故意制造了紧迫感。你不需要记住所有术语，只要先停下来确认来源、地址和正式流程，就能争取回主动权。"
-    }
+    },
+    "fallbackActionCards": [
+      { "title": "先核对来源", "why": "未知来源和紧迫语气常常会把人推向错误动作。", "doNext": "先查看发送者、域名和提交地址" },
+      { "title": "保留现场", "why": "保留原始信息能让团队继续调查，而不是让线索消失。", "doNext": "先截图并记录关键时间线" },
+      { "title": "走正式渠道", "why": "官方 IT 或内部报告渠道能减少二次扩散。", "doNext": "通过已知内部渠道提交报告" }
+    ]
   },
 
   "fallback": {
     "safe": "你先保留了现场，没有把凭据或文件交给未知来源，再走内部渠道上报。这能让团队在不扩大影响的情况下继续调查。",
     "danger": "这个动作会把你交给未知来源的页面或程序。先停止操作、保留现场，并通过已知的内部渠道上报，通常比继续尝试更安全。",
     "unsure": "可以先不做决定。把请求的来源、提交地址和它要求你提供的资料记下来，再通过你已知的内部渠道确认。"
+  },
+
+  "fallbackByChapter": {
+    "chapter1": {
+      "safe": {
+        "low": "你选择了先停下来，但理由还没有指出具体线索。回头核对弹窗的提交地址和后台值班记录，再通过内部渠道报告。",
+        "high": "你保留了现场，并注意到登录请求的来源或提交地址与官方入口不一致。把这个域名记录下来，再通过内部渠道报告。"
+      },
+      "danger": {
+        "low": "这个登录动作有风险，而你的理由还没有说明依据。先停止输入，核对弹窗来源和提交地址，不要继续提交凭据。",
+        "high": "即使你当时想恢复会话，弹窗来源和真实提交地址仍需要先核对。不要把凭据交给未知入口，保留现场并报告。"
+      },
+      "unsure": {
+        "level1": "先看一下这个登录提示是从哪里出现的。",
+        "level2": "核对登录按钮实际提交到哪个网址，以及它是否出现在值班记录里。",
+        "level3": "把弹窗提交地址和官方 EduFlow 地址并排对照，再决定下一步。"
+      }
+    },
+    "chapter2": {
+      "safe": {
+        "low": "你选择了先控制文件，但理由还没有指出具体线索。回头核对发送者、文件类型和消息时间。",
+        "high": "你识别出了发送者或可执行文件的风险，并选择先隔离。保留原始信息，再通过内部渠道报告。"
+      },
+      "danger": {
+        "low": "直接运行未知文件会扩大事故影响。先停止操作，核对发送者和文件来源，不要再次打开它。",
+        "high": "即使文件声称能修复部署问题，外部发送者和可执行文件仍需要先验证。隔离文件并保留原始信息。"
+      },
+      "unsure": {
+        "level1": "先看一下文件是谁发来的。",
+        "level2": "核对发送者是否在内部账号目录里，再查看文件名称和类型。",
+        "level3": "把发送者、文件类型和消息时间放在一起对照，不要运行文件。"
+      }
+    },
+    "chapter3": {
+      "safe": {
+        "low": "你选择了不直接提交资料，但理由还没有指出具体线索。回头核对页面要求的字段和官方 IT 流程。",
+        "high": "你注意到验证码或验证入口不符合正式流程，并选择联系 IT。保留页面信息，走已知的官方渠道。"
+      },
+      "danger": {
+        "low": "直接提交验证码会扩大账号接管风险。先停止输入，核对验证入口和正式 IT 流程。",
+        "high": "即使你担心账号被锁定，验证入口和验证码要求仍需要先通过官方渠道确认。不要继续提交敏感信息。"
+      },
+      "unsure": {
+        "level1": "先看一下页面要求你提交哪些信息。",
+        "level2": "核对它是否要求验证码，以及验证按钮指向哪个地址。",
+        "level3": "把验证码要求、页面地址和 IR-247 的前序时间线放在一起对照。"
+      }
+    }
   }
 }

@@ -1,0 +1,280 @@
+{
+  "_comment": "Northlight Digital incident file: all copy and clues are fictional training content and do not connect to a real company or system.",
+  "dashboard": {
+    "greeting": "Hey Jordan, welcome back.",
+    "incidentTitle": "INCIDENT — EduFlow Service Disruption",
+    "incidentSubtitle": "At 23:47, EduFlow authentication started behaving strangely. The response channel has added you to the on-call roster.",
+    "actions": {
+      "primer": "30-second primer",
+      "skip": "Skip — I know the basics"
+    },
+    "primerContent": {
+      "title": "30-second primer: what you may see tonight",
+      "body": "You will see three requests that look like normal work: sign in again, run a repair tool, and unlock an account. They all push you to act immediately. Check the source, submission address, and official process before you decide.",
+      "cta": "Continue"
+    }
+  },
+  "briefing": {
+    "title": "THREAT BRIEFING",
+    "body": "At 23:47, EduFlow is at peak student submission time. An attacker does not need to break the core system first; they only need an on-call worker to sign in, run a file, or hand over a verification code while under pressure.",
+    "cta": "Join the response team"
+  },
+  "roles": {
+    "priya": {
+      "mentorId": "priya",
+      "type": "SECURITY ANALYST",
+      "label": "Authentication investigation",
+      "description": "Start with the EduFlow admin console and login request to confirm whether the source is trustworthy.",
+      "focus": "Domains · status page · credentials",
+      "route": "EduFlow Admin / Status Monitor",
+      "mission": "Confirm whether the unusual login request is trustworthy and preserve enough evidence for the response team.",
+      "tasks": [
+        { "label": "Check the admin session and login prompt", "hint": "Click the address bar, Session Expired popup, and login button to see where each one leads." },
+        { "label": "Record the domain, submission address, and timeline", "hint": "Open Status Monitor or IT Support and add independent sources to the case file." },
+        { "label": "Report the anomaly through a known internal channel", "hint": "When you finish investigating, tell Priya what you did and which evidence supports it." }
+      ]
+    },
+    "marcus": {
+      "mentorId": "marcus",
+      "type": "INCIDENT RESPONDER",
+      "label": "Suspicious file response",
+      "description": "Follow up on the repair tool in the on-call chat, contain its impact, and preserve evidence for the investigation.",
+      "focus": "File · source · timeline",
+      "route": "Incident Chat / File Preview",
+      "mission": "Confirm the source of the urgent repair tool before it expands the incident.",
+      "tasks": [
+        { "label": "Check the sender and message time", "hint": "Click the sender account and incident timeline to confirm whether the message came from a trusted internal source." },
+        { "label": "Inspect the file name and source clues", "hint": "Open File preview and inspect the signature, creation time, and message time. Do not run it." },
+        { "label": "Quarantine the file and report it internally", "hint": "When you finish investigating, explain how you would contain the file's impact." }
+      ]
+    },
+    "aiko": {
+      "mentorId": "aiko",
+      "type": "GRC & COMPLIANCE LEAD",
+      "label": "Account process review",
+      "description": "Check the lock and recovery process to decide what can be submitted and what must be formally reported.",
+      "focus": "Process · authorization · reporting",
+      "route": "Identity Portal / Security Notices",
+      "mission": "Decide whether the account lock is trustworthy and return recovery to the official process.",
+      "tasks": [
+        { "label": "Check the lock notice and verification request", "hint": "Inspect the Verify & Unlock target, field descriptions, and security notice." },
+        { "label": "Separate necessary information from sensitive credentials", "hint": "Open IT Access Help and compare it with the official recovery process." },
+        { "label": "Contact IT through the official recovery and reporting process", "hint": "When you finish investigating, explain what can be submitted and what must be reported." }
+      ]
+    }
+  },
+  "mentors": {
+    "priya": {
+      "name": "Priya",
+      "role": "Security Analyst",
+      "line": "I am Priya. I am watching authentication and unusual logins tonight. You do not need to trust any popup immediately; leave the evidence in the case file and we will assess it together."
+    },
+    "marcus": {
+      "name": "Marcus",
+      "role": "Incident Responder",
+      "line": "Marcus here. I handle suspicious things that may already be entering the system. Someone just posted an urgent repair tool in the on-call chat. Do not run it until we know where it came from."
+    },
+    "aiko": {
+      "name": "Aiko",
+      "role": "GRC & Compliance Lead",
+      "line": "I am Aiko. I bring incidents back to the official process. When an account is locked, the most dangerous part may be someone using anxiety to make you bypass verification and reporting."
+    }
+  },
+  "chapters": [
+    {
+      "id": "chapter1",
+      "mentorId": "priya",
+      "threatType": "INCIDENT 01 / AUTHENTICATION",
+      "difficulty": "beginner",
+      "attackType": "Credential phishing / authentication spoofing",
+      "title": "The admin session suddenly expires",
+      "scenario": "You are checking the EduFlow submission queue. A Session Expired window that is not in the on-call log covers the admin console.",
+      "evidence": [
+        { "id": "current-url", "label": "Current address bar", "detail": "The EduFlow Admin address is eduflow-portal.com/admin.", "teachingPointIds": ["check-domain", "not-in-roster"] },
+        { "id": "login-target", "label": "Login button target", "detail": "The Log In button submits to eduflow-portal-auth.net/login.", "teachingPointIds": ["check-domain", "no-creds-in-popup"] },
+        { "id": "status-record", "label": "Official status page", "detail": "The official status page records authentication degradation but does not ask users to re-enter passwords.", "teachingPointIds": ["not-in-roster"] },
+        { "id": "support-process", "label": "IT formal process", "detail": "The company login entry point is eduflow-portal.com/login; IT does not use temporary domains.", "teachingPointIds": ["report-internal"] }
+      ],
+      "hints": [
+        { "level": 1, "text": "First check where this login prompt came from." },
+        { "level": 2, "text": "Check the address the login button submits to and compare it with the on-call log." },
+        { "level": 3, "text": "Compare the popup submission address with the official EduFlow login entry point." }
+      ],
+      "teachingPoints": [
+        { "id": "check-domain", "text": "The sign-in button submits to eduflow-portal-auth.net/login, not the official eduflow-portal.com/login entry point", "keywords": ["domain", "url", "address", "link", "website", "submits", "eduflow-portal-auth"] },
+        { "id": "no-creds-in-popup", "text": "Do not type your username and password into a popup that appears out of nowhere", "keywords": ["password", "credential", "popup", "login", "username"] },
+        { "id": "not-in-roster", "text": "This Session Expired window is not in the on-call log, so it is an unconfirmed source", "keywords": ["roster", "source", "session expired", "on-call", "unconfirmed"] },
+        { "id": "report-internal", "text": "Report through a known internal channel instead of handling it yourself", "keywords": ["report", "internal", "helpdesk", "official channel"] }
+      ],
+      "outcome": {
+        "safe": "Priya blocked the domain within two minutes and stopped the credentials from leaking.",
+        "danger": "The credentials you entered were sent to an external domain. The attacker now has a valid on-call account."
+      },
+      "followUp": {
+        "safe": "Record the real submission address and suspicious domain in the internal report, and note that no credentials were submitted.",
+        "danger": "Stop entering information, preserve the popup and address evidence, and report the possible credential exposure through a known internal channel.",
+        "unsure": "Next, check only the source, submission address, and formal process; do not enter credentials in the popup."
+      },
+      "options": [
+        { "id": "safe", "label": "Report the suspicious sign-in popup" },
+        { "id": "danger", "label": "Enter the credentials and sign in again" },
+        { "id": "unsure", "label": "🤔 I'm not sure — can you explain more?" }
+      ]
+    },
+    {
+      "id": "chapter2",
+      "mentorId": "marcus",
+      "threatType": "INCIDENT 02 / FILE DELIVERY",
+      "difficulty": "intermediate",
+      "attackType": "Malicious file / urgency pressure",
+      "title": "The urgent repair tool in the on-call chat",
+      "scenario": "The authentication incident is still active when someone posts fix_deploy_issue.exe in the on-call chat, claiming it will fix the deployment problem. The message comes from an external account you do not recognise.",
+      "evidence": [
+        { "id": "sender-directory", "label": "Sender directory", "detail": "it-helpdesk-temp is not in Marcus's internal account directory and uses an external email domain.", "teachingPointIds": ["unknown-sender"] },
+        { "id": "file-metadata", "label": "File metadata", "detail": "fix_deploy_issue.exe has no verifiable signature and was created before the message was sent.", "teachingPointIds": ["exe-from-chat"] },
+        { "id": "incident-timeline", "label": "Incident timeline", "detail": "The file was posted two minutes after the authentication anomaly and the sender demands immediate execution.", "teachingPointIds": ["urgency-pressure"] },
+        { "id": "containment-process", "label": "Containment process", "detail": "Quarantine the file and preserve its original details before reporting through the internal channel.", "teachingPointIds": ["isolate-and-report"] }
+      ],
+      "hints": [
+        { "level": 1, "text": "First inspect who sent the file." },
+        { "level": 2, "text": "Confirm whether the sender is in the internal directory, then inspect the file name and type." },
+        { "level": 3, "text": "Compare the sender, file type, and message time together. Do not run the file." }
+      ],
+      "teachingPoints": [
+        { "id": "unknown-sender", "text": "The sender is an external account you do not recognise and is not in Marcus's internal account directory", "keywords": ["sender", "external", "unknown", "stranger", "not in the directory"] },
+        { "id": "exe-from-chat", "text": "Receiving an unsigned executable file, fix_deploy_issue.exe, in an on-call chat is itself a high-risk signal", "keywords": ["exe", "executable", "attachment", "file", "unsigned"] },
+        { "id": "urgency-pressure", "text": "The sender claims the file will fix the deployment problem and uses incident pressure to push you to run it immediately", "keywords": ["urgency", "immediately", "fix", "pressure", "urgent"] },
+        { "id": "isolate-and-report", "text": "Quarantine first, preserve the original details, then report through the internal channel", "keywords": ["quarantine", "preserve", "report", "internal channel"] }
+      ],
+      "outcome": {
+        "safe": "Marcus analysed the file in a sandbox, confirmed it calls back to an external server, and blocked it.",
+        "danger": "The file ran on your machine and the attacker gained a foothold inside the internal network."
+      },
+      "followUp": {
+        "safe": "Preserve the sender, signature, and timeline evidence, then report that the file was quarantined through the internal channel.",
+        "danger": "Do not run the file again; preserve the original file and sender details, isolate the device, and report immediately.",
+        "unsure": "Next, inspect only the sender, file metadata, and timeline; do not open or run the attachment."
+      },
+      "continuityLine": "I saw that you marked the suspicious login domain in the first incident. This file was posted two minutes after that popup appeared, so treat it as part of the same chain.",
+      "options": [
+        { "id": "safe", "label": "Quarantine the file and report it internally" },
+        { "id": "danger", "label": "Run the tool to see whether it fixes the deployment" },
+        { "id": "unsure", "label": "🤔 I'm not sure — can you explain more?" }
+      ]
+    },
+    {
+      "id": "chapter3",
+      "mentorId": "aiko",
+      "threatType": "INCIDENT 03 / ACCOUNT CONTROL",
+      "difficulty": "intermediate",
+      "attackType": "Account takeover / verification-code lure",
+      "title": "The account is locked — but who is asking for verification?",
+      "scenario": "The on-call channel has gone quiet when your Northlight account is suddenly locked. The lock notice asks for your employee ID and phone verification code to restore access.",
+      "evidence": [
+        { "id": "verification-request", "label": "Verification fields", "detail": "The lock page requests an employee ID and phone verification code while using immediate restoration to create pressure.", "teachingPointIds": ["no-code-sharing", "urgency-pressure"] },
+        { "id": "verify-target", "label": "Verification button target", "detail": "The Verify & Unlock button points to secure-verify-eduflow.net.", "teachingPointIds": ["verify-official-channel"] },
+        { "id": "access-help", "label": "IT Access Help", "detail": "The formal process requires an IT ticket and does not ask for a phone verification code on the lock page.", "teachingPointIds": ["no-code-sharing", "verify-official-channel"] },
+        { "id": "security-notice", "label": "Internal security notice", "detail": "The notice links the 23:47 unusual login and this lock to IR-247.", "teachingPointIds": ["link-to-earlier"] }
+      ],
+      "hints": [
+        { "level": 1, "text": "First check what information the page is asking you to submit." },
+        { "level": 2, "text": "Check whether it asks for a verification code and where the verification button points." },
+        { "level": 3, "text": "Compare the code request, page address, and IR-247 timeline." }
+      ],
+      "teachingPoints": [
+        { "id": "no-code-sharing", "text": "A normal IT process does not ask you to submit a phone verification code on the lock page", "keywords": ["code", "otp", "verification", "verification code", "never share"] },
+        { "id": "urgency-pressure", "text": "The lock notice uses restore access immediately to create anxiety and push you to verify at once", "keywords": ["restore access", "immediately", "urgent", "countdown", "anxiety"] },
+        { "id": "verify-official-channel", "text": "The verification button points to secure-verify-eduflow.net; verify through the official IT channel and helpdesk", "keywords": ["secure-verify", "verify", "official", "helpdesk", "IT", "ticket"] },
+        { "id": "link-to-earlier", "text": "The internal security notice links this lock to the 23:47 authentication incident and the same IR-247 case", "keywords": ["23:47", "IR-247", "earlier", "incident", "same case", "timeline"] }
+      ],
+      "outcome": {
+        "safe": "IT confirmed this was not an official lock. Your account is safe, and Aiko merged the three incidents into one record.",
+        "danger": "The employee ID and verification code you submitted were used to take over the account, and the incident spread to the whole on-call group."
+      },
+      "followUp": {
+        "safe": "Preserve the page address and security notice evidence, then confirm the account status through the official IT ticket process without submitting a code.",
+        "danger": "Stop submitting information, contact IT through the official channel, and report that the employee ID and verification code may be exposed.",
+        "unsure": "Next, check the page address, code request, and formal IT process; do not submit sensitive information."
+      },
+      "continuityLine": "This lock appeared after the suspicious file message. Do not treat it as an isolated alert: compare its domains and timing with the first two incidents.",
+      "options": [
+        { "id": "safe", "label": "Contact IT through the official process without submitting the details" },
+        { "id": "danger", "label": "Enter the employee ID and verification code in the form" },
+        { "id": "unsure", "label": "🤔 I'm not sure — can you explain more?" }
+      ]
+    }
+  ],
+  "referenceCard": {
+    "phishing": ["Check the URL and real submission address", "Do not enter credentials into an unexpected popup", "Report through a known internal channel"],
+    "malicious-file": ["Confirm the sender and file source", "Do not run an unknown executable", "Quarantine the file and preserve the original details"],
+    "ransom-lockout": ["Do not let 'unlock immediately' create pressure", "Check the official notice and submission address", "Use the formal IT process for account issues"]
+  },
+  "debrief": {
+    "title": "Tonight's performance",
+    "scoreLabel": "SECURE DECISION SCORE",
+    "rolesRecapTitle": "The three roles you experienced tonight",
+    "evidenceTitle": "The incident chain you assembled",
+    "flavorByTier": {
+      "high": "Under pressure, you still checked the source, preserved evidence, and used the formal channel. That habit is one of the most valuable first defenses in incident response.",
+      "mid": "You identified some danger signals, but the pace of 'act immediately' still pulled you off course when alerts stacked up. Next time, put the source and submission address in the case file first.",
+      "low": "Several requests in this incident were designed to create urgency. You do not need every security term; pause, confirm the source and address, and use the official process to take back control."
+    },
+    "fallbackActionCards": [
+      { "title": "Check the source first", "why": "Unknown sources and urgent language can push people toward unsafe actions.", "doNext": "Inspect the sender, domain, and submission address" },
+      { "title": "Preserve the scene", "why": "Original details let the team continue investigating instead of losing the clues.", "doNext": "Capture the key evidence and timeline" },
+      { "title": "Use the formal channel", "why": "Official IT or internal reporting reduces secondary spread.", "doNext": "Submit a report through a known internal channel" }
+    ]
+  },
+  "fallback": {
+    "safe": "You preserved the scene, kept credentials or files away from the unknown source, and used the internal channel. That lets the team investigate without expanding the impact.",
+    "danger": "This action hands control to an unknown page or program. Stop, preserve the scene, and report through a known internal channel instead of continuing.",
+    "unsure": "You can pause before deciding. Record the source, submission address, and requested information, then confirm through a known internal channel."
+  },
+  "fallbackByChapter": {
+    "chapter1": {
+      "safe": {
+        "low": "You paused, but the reason did not identify a concrete clue. Recheck the popup's submission address and the on-call log, then report through the internal channel.",
+        "high": "You preserved the scene and noticed that the login source or submission address did not match the official entry point. Record the domain and report it internally."
+      },
+      "danger": {
+        "low": "This login action is risky, but the reason did not explain why. Stop entering information and check the popup source and submission address.",
+        "high": "Even if you wanted to restore the session, the popup source and real submission address needed checking first. Do not hand credentials to an unknown entry point."
+      },
+      "unsure": {
+        "level1": "First check where this login prompt came from.",
+        "level2": "Check the URL that the login button submits to and whether the prompt appears in the on-call log.",
+        "level3": "Compare the popup submission address with the official EduFlow address before deciding what to do."
+      }
+    },
+    "chapter2": {
+      "safe": {
+        "low": "You chose to contain the file, but the reason did not identify a concrete clue. Recheck the sender, file type, and message time.",
+        "high": "You identified a risk in the sender or executable and chose to quarantine it. Preserve the original details, then report it internally."
+      },
+      "danger": {
+        "low": "Running an unknown file can expand the incident. Stop, check the sender and file source, and do not open it again.",
+        "high": "Even if the file claims to fix the deployment, the external sender and executable still needed verification. Quarantine it and preserve the original details."
+      },
+      "unsure": {
+        "level1": "First check who sent the file.",
+        "level2": "Check whether the sender is in the internal account directory, then inspect the file name and type.",
+        "level3": "Compare the sender, file type, and message time together. Do not run the file."
+      }
+    },
+    "chapter3": {
+      "safe": {
+        "low": "You chose not to submit the details, but the reason did not identify a concrete clue. Recheck the requested fields and the official IT process.",
+        "high": "You noticed that the code request or verification entry point did not match the formal process and chose to contact IT. Preserve the page information and use the known channel."
+      },
+      "danger": {
+        "low": "Submitting a verification code can expand the account takeover risk. Stop, check the entry point, and compare it with the formal IT process.",
+        "high": "Even if you were worried about the lock, the entry point and code request needed confirmation through the official channel. Do not submit sensitive information."
+      },
+      "unsure": {
+        "level1": "First check what information the page is asking you to submit.",
+        "level2": "Check whether it asks for a verification code and where the verification button points.",
+        "level3": "Compare the code request, page address, and the earlier IR-247 timeline before deciding."
+      }
+    }
+  }
+}

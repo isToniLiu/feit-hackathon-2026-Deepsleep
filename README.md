@@ -21,7 +21,7 @@
 
 1. 克隆仓库到本地：
    ```
-   git clone https://github.com/isToniLiu/ddl-lockdown.git
+   git clone https://github.com/isToniLiu/feit-hackathon-2026-Deepsleep.git
    ```
 2. 用你的AI编程工具（Claude Code / Cursor / Codex CLI 等）打开克隆下来的这个文件夹，把它设为项目根目录/工作目录
 3. 确认AI工具能看到文件夹里的 `README.md`、`AGENTS.md`（可以直接问它"列一下这个项目根目录有哪些文件"）
@@ -29,7 +29,7 @@
 
 > 如果你用的是没有本地文件读取能力的网页版AI聊天工具（没有克隆这一步、纯粹网页对话），
 > 把仓库链接换成对应文件的raw链接直接贴给它，比如：
-> `https://raw.githubusercontent.com/isToniLiu/ddl-lockdown/main/AGENTS.md`
+> `https://raw.githubusercontent.com/isToniLiu/feit-hackathon-2026-Deepsleep/main/AGENTS.md`
 
 ---
 

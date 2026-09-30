@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "DDL Lockdown",
-  description: "FEIT Hackathon 2026 — Deepsleep",
+  title: "CyberStage",
+  description: "Scenario-based cybersecurity learning, coached on your own reasoning.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

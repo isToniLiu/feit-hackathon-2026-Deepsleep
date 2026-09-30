@@ -1,4 +1,5 @@
-import { getMentor } from "@/lib/story";
+import { getLocalizedMentor } from "@/lib/story";
+import { useLocale, tr } from "@/lib/i18n";
 import { ScreenShell } from "./ScreenShell";
 
 export function MentorScreen({
@@ -8,12 +9,14 @@ export function MentorScreen({
   mentorId: string;
   onNext: () => void;
 }) {
-  const mentor = getMentor(mentorId);
+  const { locale } = useLocale();
+  const mentor = getLocalizedMentor(locale, mentorId);
+  if (!mentor) return null;
   return (
     <ScreenShell
       eyebrow={mentor.role}
       title={mentor.name}
-      ctaLabel="过去帮忙"
+      ctaLabel={tr(locale, "Continue", "继续")}
       onNext={onNext}
     >
       <p>{mentor.line}</p>

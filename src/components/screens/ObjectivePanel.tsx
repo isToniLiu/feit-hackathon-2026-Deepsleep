@@ -1,44 +1,58 @@
 "use client";
 
 import { useState } from "react";
-import type { RoleTask } from "@/lib/story";
+import type { ChapterEvidence, RoleTask } from "@/lib/story";
+import { useLocale, tr } from "@/lib/i18n";
+
+const difficultyLabel: Record<string, { en: string; zh: string }> = {
+  beginner: { en: "beginner", zh: "入门" },
+  intermediate: { en: "intermediate", zh: "中级" },
+  advanced: { en: "advanced", zh: "高级" },
+};
 
 export function ObjectivePanel({
   tasks,
   completed,
+  evidence = [],
+  difficulty,
+  attackType,
 }: {
   tasks: RoleTask[];
   completed: boolean[];
+  evidence?: ChapterEvidence[];
+  difficulty?: string;
+  attackType?: string;
 }) {
   const [expanded, setExpanded] = useState(true);
+  const { locale } = useLocale();
   const completedCount = completed.filter(Boolean).length;
   const activeIndex = completed.findIndex((isComplete) => !isComplete);
   const hintIndex = activeIndex === -1 ? Math.max(tasks.length - 1, 0) : activeIndex;
   const activeTask = tasks[hintIndex];
 
   return (
-    <section className="sticky top-0 z-10 w-full max-w-2xl overflow-hidden rounded-xl border border-slate-500 bg-[#0d2033]/95 text-left shadow-xl backdrop-blur">
+    <section className="w-full overflow-hidden border border-rule bg-surface text-left shadow-[0_12px_30px_rgba(30,28,20,0.08)]">
       <button
         onClick={() => setExpanded((isOpen) => !isOpen)}
         aria-expanded={expanded}
-        className="flex w-full items-center justify-between gap-4 px-4 py-3 text-left hover:bg-slate-800/80"
+        className="flex w-full items-center justify-between gap-4 px-4 py-3 text-left hover:bg-paper"
       >
         <span>
-          <span className="block text-[10px] font-bold uppercase tracking-[0.18em] text-teal-300">Case objectives</span>
-          <span className="mt-1 block text-xs text-slate-300">
-            {activeIndex === -1 ? "调查任务已完成，现场仍保持开放" : `当前目标 · ${activeTask?.label ?? "继续核对现场"}`}
+          <span className="block text-[10px] font-bold uppercase tracking-[0.18em] text-coral">{tr(locale, "Case objectives", "案件目标")}</span>
+          <span className="mt-1 block text-xs text-muted">
+            {activeIndex === -1 ? tr(locale, "Investigation complete; the scene remains open", "调查任务已完成，现场仍保持开放") : `${tr(locale, "Current objective", "当前目标")} · ${activeTask?.label ?? tr(locale, "Continue checking the scene", "继续核对现场")}`}
           </span>
         </span>
         <span className="flex shrink-0 items-center gap-3">
-          <span className="rounded-full border border-teal-300/60 px-3 py-1 font-mono text-[11px] text-teal-200">
+          <span className="rounded-full border border-rule px-3 py-1 font-mono text-[11px] text-muted">
             {completedCount} / {tasks.length}
           </span>
-          <span className="text-slate-400">{expanded ? "⌃" : "⌄"}</span>
+          <span className="text-muted">{expanded ? "⌃" : "⌄"}</span>
         </span>
       </button>
 
       {expanded && (
-        <div className="border-t border-slate-700 px-4 pb-4 pt-3">
+        <div className="border-t border-rule px-4 pb-4 pt-3">
           <ol className="grid gap-2">
             {tasks.map((task, index) => {
               const isComplete = completed[index];
@@ -48,21 +62,21 @@ export function ObjectivePanel({
                   key={task.label}
                   className={`flex gap-3 rounded-lg border px-3 py-2.5 ${
                     isComplete
-                      ? "border-emerald-300/40 bg-emerald-300/10"
+                      ? "border-teal/30 bg-teal/10"
                       : isCurrent
-                        ? "border-amber-300/50 bg-amber-300/10"
-                        : "border-slate-700 bg-slate-950/30"
+                        ? "border-yellow/50 bg-yellow/10"
+                        : "border-rule bg-paper"
                   }`}
                 >
-                  <span className={`font-mono text-xs ${isComplete ? "text-emerald-200" : isCurrent ? "text-amber-200" : "text-slate-500"}`}>
+                  <span className={`font-mono text-xs ${isComplete ? "text-teal" : isCurrent ? "text-yellow" : "text-muted"}`}>
                     {isComplete ? "✓" : `0${index + 1}`}
                   </span>
                   <div>
-                    <p className={`text-xs font-medium ${isComplete ? "text-emerald-100" : isCurrent ? "text-amber-100" : "text-slate-400"}`}>
+                    <p className={`text-xs font-medium ${isComplete ? "text-ink" : isCurrent ? "text-ink" : "text-muted"}`}>
                       {task.label}
                     </p>
-                    <p className="mt-1 text-[10px] uppercase tracking-[0.12em] text-slate-500">
-                      {isComplete ? "evidence recorded" : isCurrent ? "current objective" : "queued"}
+                    <p className="mt-1 text-[10px] uppercase tracking-[0.12em] text-muted">
+                      {isComplete ? tr(locale, "evidence recorded", "已记录证据") : isCurrent ? tr(locale, "current objective", "当前目标") : tr(locale, "queued", "待处理")}
                     </p>
                   </div>
                 </li>
@@ -71,10 +85,36 @@ export function ObjectivePanel({
           </ol>
 
           {activeTask && activeIndex !== -1 && (
-            <p className="mt-3 border-l-2 border-teal-300/60 pl-3 text-xs leading-5 text-slate-300">
-              <span className="font-semibold text-teal-200">Optional hint · </span>
+            <p className="mt-3 border-l-2 border-coral pl-3 text-xs leading-5 text-muted">
+              <span className="font-semibold text-coral">{tr(locale, "Optional hint · ", "可选提示 · ")}</span>
               {activeTask.hint}
             </p>
+          )}
+
+          {(difficulty || attackType || evidence.length > 0) && (
+            <div className="mt-4 border-t border-rule pt-3">
+              <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-coral">
+                {tr(locale, "Scenario profile", "场景画像")}
+              </p>
+              <div className="mt-2 flex flex-wrap gap-2 text-[10px] text-slate-400">
+                {difficulty && <span className="rounded border border-rule px-2 py-1 text-muted">{difficultyLabel[difficulty] ? tr(locale, difficultyLabel[difficulty].en, difficultyLabel[difficulty].zh) : difficulty}</span>}
+                {attackType && <span className="rounded border border-rule px-2 py-1 text-muted">{attackType}</span>}
+              </div>
+              {evidence.length > 0 && (
+                <details className="mt-3">
+                    <summary className="cursor-pointer text-xs text-muted">
+                    {tr(locale, "Evidence available in this scene", "本场景可核对的证据")} ({evidence.length})
+                  </summary>
+                  <ul className="mt-2 space-y-2 text-[11px] text-muted">
+                    {evidence.map((item) => (
+                      <li key={item.id}>
+                        <span className="font-medium text-ink">{item.label}: </span>{item.detail}
+                      </li>
+                    ))}
+                  </ul>
+                </details>
+              )}
+            </div>
           )}
         </div>
       )}

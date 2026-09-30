@@ -205,5 +205,5 @@ PRD内容统一维护在GitHub仓库 [`docs/product/PRD.md`](../product/PRD.md)�
 
 - 赛程与规则：见《2026 FEIT Hackathon Festival - 赛程与赛事内容说明》
 - 赛中协作模板：见《2026 FEIT Hackathon Festival - 项目工作文档》（选题笔记、想法收集、决策记录等实时填写用）
-- GitHub仓库链接：https://github.com/isToniLiu/ddl-lockdown
+- GitHub仓库链接：https://github.com/isToniLiu/feit-hackathon-2026-Deepsleep
 - Vercel部署链接：<https://cyberstage.vercel.app/>
