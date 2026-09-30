@@ -123,6 +123,7 @@ export interface DecisionResult {
   choiceLabel: string;
   reason: string;
   feedback: string;
+  matchedClues?: MatchedClue[];
   actionHistory: string[];
   reasonQuality?: number;
   matchedPoints?: string[];
@@ -154,7 +155,14 @@ export interface FeedbackResult {
   reasonQuality: 0 | 1 | 2 | 3;
   matchedPoints: string[];
   missedPoints: string[];
+  matchedClues: MatchedClue[];
   followUp: string | null;
+}
+
+export interface MatchedClue {
+  pointId: string;
+  keywords: string[];
+  evidenceIds: string[];
 }
 
 export interface SceneAction {

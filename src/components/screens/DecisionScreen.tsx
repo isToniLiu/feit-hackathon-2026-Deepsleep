@@ -13,6 +13,7 @@ import {
   type ChapterEvidence,
   type HintLevel,
   type Locale,
+  type MatchedClue,
 } from "@/lib/story";
 import { useLocale, tr } from "@/lib/i18n";
 import { PhishingLoginScene } from "./scenes/PhishingLoginScene";
@@ -57,6 +58,19 @@ function hasReportAction(actions: string[]): boolean {
 function followUpMatchesLocale(value: string, locale: Locale): boolean {
   const hasCjk = /[\u3400-\u9fff]/.test(value);
   return locale === "en" ? !hasCjk : hasCjk;
+}
+
+function parseMatchedClues(value: unknown): MatchedClue[] {
+  if (!Array.isArray(value)) return [];
+  return value.filter((item): item is MatchedClue => {
+    if (!item || typeof item !== "object") return false;
+    const clue = item as Partial<MatchedClue>;
+    return typeof clue.pointId === "string"
+      && Array.isArray(clue.keywords)
+      && clue.keywords.every((keyword) => typeof keyword === "string")
+      && Array.isArray(clue.evidenceIds)
+      && clue.evidenceIds.every((evidenceId) => typeof evidenceId === "string");
+  });
 }
 
 export function DecisionScreen({
@@ -110,6 +124,7 @@ export function DecisionScreen({
   const [lastReasonQuality, setLastReasonQuality] = useState<number | undefined>();
   const [lastMatchedPoints, setLastMatchedPoints] = useState<string[]>([]);
   const [lastMissedPoints, setLastMissedPoints] = useState<string[]>([]);
+  const [lastMatchedClues, setLastMatchedClues] = useState<MatchedClue[]>([]);
   const [feedbackLocale, setFeedbackLocale] = useState<Locale | null>(null);
   const [actionHistory, setActionHistory] = useState<string[]>([]);
   const [unsureCount, setUnsureCount] = useState(0);
@@ -244,6 +259,7 @@ export function DecisionScreen({
       setLastReasonQuality(reasonQuality);
       setLastMatchedPoints(Array.isArray(json?.data?.matchedPoints) ? json.data.matchedPoints : []);
       setLastMissedPoints(Array.isArray(json?.data?.missedPoints) ? json.data.missedPoints : []);
+      setLastMatchedClues(parseMatchedClues(json?.data?.matchedClues));
       const returnedFollowUp = typeof json?.data?.followUp === "string" ? json.data.followUp.trim() : null;
       const localizedFollowUp = pendingChoice.id === "safe" || pendingChoice.id === "danger"
         ? chapter.followUp[pendingChoice.id]
@@ -260,6 +276,7 @@ export function DecisionScreen({
       setLastReasonQuality(undefined);
       setLastMatchedPoints([]);
       setLastMissedPoints([]);
+      setLastMatchedClues([]);
       setLastFollowUp(null);
       setFeedbackLocale(locale);
     }
@@ -287,10 +304,28 @@ export function DecisionScreen({
                     <p className="mt-2 text-sm leading-6 text-emerald-900">{tr(locale, "The feedback is in the chat. You can keep checking the page and case file; confirm it when you are ready for the next incident.", "反馈已经写入聊天记录。你可以继续查看当前页面和案件档案；确认后再进入下一起事件。")}</p>
                     <p className="mt-2 text-xs text-emerald-700">{tr(locale, "AI text is coaching only; the score and teaching points are determined by rules.", "AI 文案只提供教练反馈；分数和教学点由规则判定。")}</p>
                     <div className="mt-4 flex flex-wrap gap-2 text-[10px] uppercase tracking-[0.12em]">
-                      <span className="rounded-full border border-teal/30 bg-white/60 px-2 py-1 text-teal">{tr(locale, "Evidence used", "已使用证据")} · {lastMatchedPoints.length}</span>
+                      <span className="rounded-full border border-teal/30 bg-white/60 px-2 py-1 text-teal">{tr(locale, "Reason clues recognized", "已识别理由线索")} · {lastMatchedClues.length}</span>
                       <span className="rounded-full border border-yellow/40 bg-white/60 px-2 py-1 text-ink">{tr(locale, "Teaching points to revisit", "待复习教学点")} · {lastMissedPoints.length}</span>
                       {lastReasonQuality !== undefined && <span className="rounded-full border border-rule bg-white/60 px-2 py-1 text-muted">{tr(locale, "Reason quality", "理由质量")} · {lastReasonQuality}/3</span>}
                     </div>
+                    {lastMatchedClues.length > 0 && (
+                      <div className="mt-4 rounded-lg border border-teal/30 bg-teal/5 p-3">
+                        <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-teal-800">{tr(locale, "Evidence linked to your reasoning", "与你理由关联的证据")}</p>
+                        <ul className="mt-2 space-y-2 text-xs leading-5 text-zinc-700">
+                          {lastMatchedClues.map((clue) => {
+                            const point = chapter.teachingPoints.find((item) => item.id === clue.pointId);
+                            const evidence = chapter.evidence.filter((item) => clue.evidenceIds.includes(item.id));
+                            return (
+                              <li key={clue.pointId}>
+                                <p className="font-medium">{point?.text ?? clue.pointId}</p>
+                                {evidence.length > 0 && <p className="mt-0.5 text-zinc-500">{tr(locale, "Scene evidence: ", "现场证据：")}{evidence.map((item) => item.label).join(" · ")}</p>}
+                                <p className="mt-0.5 text-zinc-400">{tr(locale, "Matched terms: ", "命中词：")}{clue.keywords.join(", ")}</p>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      </div>
+                    )}
                     {lastFollowUp && (
                       <p className="mt-3 border-l-2 border-emerald-400 pl-3 text-sm text-emerald-800">
                         <span className="font-semibold">{tr(locale, "Coach follow-up: ", "教练追问：")}</span>{lastFollowUp}
@@ -304,6 +339,7 @@ export function DecisionScreen({
                           choiceLabel: pendingChoice.label,
                           reason: lastReason,
                           feedback: lastFeedback,
+                          matchedClues: lastMatchedClues,
                           actionHistory,
                           reasonQuality: lastReasonQuality,
                           matchedPoints: lastMatchedPoints,

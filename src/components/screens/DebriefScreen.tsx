@@ -276,6 +276,14 @@ export function DebriefScreen({
             const storedText = [answer.reason, answer.feedback, ...answer.actionHistory].join(" ");
             const answerMatchesLocale = storedTextMatchesLocale(storedText, answer.locale, locale);
             const choiceLabel = chapter.options.find((choice) => choice.id === answer.choiceId)?.label ?? answer.choiceLabel;
+            const matchedClues = answer.matchedClues ?? (answer.matchedPoints ?? []).map((pointId) => ({
+              pointId,
+              keywords: [],
+              evidenceIds: chapter.evidence.filter((item) => item.teachingPointIds.includes(pointId)).map((item) => item.id),
+            }));
+            const missedPoints = (answer.missedPoints ?? [])
+              .map((pointId) => chapter.teachingPoints.find((point) => point.id === pointId))
+              .filter((point): point is NonNullable<typeof point> => Boolean(point));
             return (
               <li
                 key={chapterId}
@@ -288,6 +296,27 @@ export function DebriefScreen({
                 {answerMatchesLocale ? (
                   <>
                     <p className="text-zinc-500">{tr(locale, "Your reasoning: ", "你的理由：")}{answer.reason}</p>
+                    {matchedClues.length > 0 && (
+                      <div className="mt-3 rounded border border-teal/30 bg-teal/5 p-3">
+                        <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-teal-800">{tr(locale, "Evidence linked to your reasoning", "与你理由关联的证据")}</p>
+                        <ul className="mt-2 space-y-2 text-xs text-zinc-600">
+                          {matchedClues.map((clue) => {
+                            const point = chapter.teachingPoints.find((item) => item.id === clue.pointId);
+                            const linkedEvidence = chapter.evidence.filter((item) => clue.evidenceIds.includes(item.id));
+                            return (
+                              <li key={clue.pointId}>
+                                <p className="font-medium text-zinc-700">{point?.text ?? clue.pointId}</p>
+                                {linkedEvidence.length > 0 && <p className="mt-0.5">{tr(locale, "Related scene evidence: ", "对应现场证据：")}{linkedEvidence.map((item) => item.label).join(" · ")}</p>}
+                                {clue.keywords.length > 0 && <p className="mt-0.5 text-zinc-400">{tr(locale, "Matched terms: ", "命中词：")}{clue.keywords.join(", ")}</p>}
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      </div>
+                    )}
+                    {missedPoints.length > 0 && (
+                      <p className="mt-3 text-xs text-zinc-500"><span className="font-medium">{tr(locale, "Evidence to revisit: ", "建议补看的证据：")}</span>{missedPoints.map((point) => point.text).join(" · ")}</p>
+                    )}
                     <details className="mt-2">
                       <summary className="cursor-pointer text-xs text-zinc-500">{tr(locale, "View action log", "查看行动记录")} ({answer.actionHistory.length})</summary>
                       <ol className="mt-2 flex list-decimal flex-col gap-1 pl-4 text-xs text-zinc-500">

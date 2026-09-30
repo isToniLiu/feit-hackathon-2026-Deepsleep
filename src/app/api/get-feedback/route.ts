@@ -70,6 +70,27 @@ function getSafeReasonQuality(reason: string, chapter: Story["chapters"][number]
   return Math.min(2, deterministicReasonAssessment(reason, chapter).reasonQuality) as 0 | 1 | 2;
 }
 
+function reasonGrounding(
+  chapter: Story["chapters"][number] | undefined,
+  matchedClues: { pointId: string; evidenceIds: string[] }[],
+  locale: Locale,
+): string {
+  if (!chapter || matchedClues.length === 0) return "";
+  const pointTexts = matchedClues
+    .map((clue) => chapter.teachingPoints.find((point) => point.id === clue.pointId)?.text)
+    .filter((text): text is string => Boolean(text))
+    .slice(0, 2);
+  const evidenceLabels = [...new Set(matchedClues.flatMap((clue) =>
+    clue.evidenceIds
+      .map((evidenceId) => chapter.evidence.find((item) => item.id === evidenceId)?.label)
+      .filter((label): label is string => Boolean(label)),
+  ))].slice(0, 2);
+  if (pointTexts.length === 0) return "";
+  return locale === "zh"
+    ? `你提到的“${pointTexts.join("”“")}”对应现场证据：${evidenceLabels.join("、") || "当前页面线索"}。`
+    : `Your reasoning connects to “${pointTexts.join('” and “')}”, supported by: ${evidenceLabels.join(", ") || "the current scene clues"}.`;
+}
+
 function fallbackFeedback(
   storyData: Story,
   chapterId: string,
@@ -84,12 +105,14 @@ function fallbackFeedback(
     ?? (choice === "danger" ? storyData.fallback.danger : storyData.fallback.safe);
   const assessment = chapter
     ? deterministicReasonAssessment(reason, chapter)
-    : { reasonQuality: 0 as const, matchedPoints: [], missedPoints: [] };
+    : { reasonQuality: 0 as const, matchedPoints: [], missedPoints: [], matchedClues: [] };
+  const groundedFeedback = reasonGrounding(chapter, assessment.matchedClues, storyData === getStory("en") ? "en" : "zh");
   return {
-    feedback,
+    feedback: groundedFeedback ? `${feedback} ${groundedFeedback}` : feedback,
     reasonQuality: assessment.reasonQuality,
     matchedPoints: assessment.matchedPoints,
     missedPoints: assessment.missedPoints,
+    matchedClues: assessment.matchedClues,
     followUp: quality <= 1
       ? chapter?.followUp[choice as "safe" | "danger"]
         ?? (storyData === getStory("en") ? "Can you name one concrete source, address, or process clue?" : "你能指出一个具体的来源、地址或流程线索吗？")
@@ -102,7 +125,7 @@ function fallbackHint(storyData: Story, chapterId: string, level: 1 | 2 | 3): Fe
   const hint = chapter?.hints.find((item) => item.level === level)?.text
     ?? storyData.fallbackByChapter[chapterId]?.unsure[`level${level}` as "level1" | "level2" | "level3"]
     ?? storyData.fallback.unsure;
-  return { feedback: hint, reasonQuality: 0, matchedPoints: [], missedPoints: [], followUp: null };
+  return { feedback: hint, reasonQuality: 0, matchedPoints: [], missedPoints: [], matchedClues: [], followUp: null };
 }
 
 function normalizeActions(actions: unknown): string[] {
@@ -180,13 +203,17 @@ function validateFeedback(value: unknown, locale: Locale, chapterId: string, rea
   }
   const assessment = chapter
     ? deterministicReasonAssessment(reason, chapter)
-    : { reasonQuality: 0 as const, matchedPoints: [], missedPoints: [] };
+    : { reasonQuality: 0 as const, matchedPoints: [], missedPoints: [], matchedClues: [] };
   return {
-    feedback: result.feedback.trim(),
+    feedback: (() => {
+      const groundedFeedback = reasonGrounding(chapter, assessment.matchedClues, locale);
+      return groundedFeedback ? `${result.feedback.trim()} ${groundedFeedback}` : result.feedback.trim();
+    })(),
     // The model may write coaching prose, but scoring and teaching-point attribution stay rule-based.
     reasonQuality: assessment.reasonQuality,
     matchedPoints: assessment.matchedPoints,
     missedPoints: assessment.missedPoints,
+    matchedClues: assessment.matchedClues,
     followUp: result.followUp === null || typeof result.followUp === "string" ? result.followUp : null,
   };
 }
@@ -372,6 +399,7 @@ export async function POST(request: Request) {
       reasonQuality: 0,
       matchedPoints: [],
       missedPoints: chapter.teachingPoints.map((point) => point.id),
+      matchedClues: [],
       followUp: locale === "zh" ? "你能只描述一个不包含敏感信息的线索吗？" : "Can you describe one clue without including sensitive information?",
       source: "fallback",
       judgementSource: "rules",

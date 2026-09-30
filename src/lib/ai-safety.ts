@@ -1,4 +1,4 @@
-import type { Chapter } from "./story";
+import type { Chapter, MatchedClue } from "./story";
 
 export type SafetyIssue = "sensitive" | "prompt-injection";
 
@@ -35,25 +35,35 @@ export function deterministicReasonAssessment(reason: string, chapter: Chapter):
   reasonQuality: 0 | 1 | 2 | 3;
   matchedPoints: string[];
   missedPoints: string[];
+  matchedClues: MatchedClue[];
 } {
   const normalized = reason.trim().toLowerCase();
   const issue = detectSafetyIssue(reason);
-  const matchedPoints = issue
+  const matchedClues = issue
     ? []
-    : chapter.teachingPoints
-      .filter((point) => point.keywords.some((keyword) => normalized.includes(keyword.toLowerCase())))
-      .map((point) => point.id);
+    : chapter.teachingPoints.flatMap((point) => {
+        const keywords = point.keywords.filter((keyword) => normalized.includes(keyword.toLowerCase()));
+        if (keywords.length === 0) return [];
+        return [{
+          pointId: point.id,
+          keywords,
+          evidenceIds: chapter.evidence
+            .filter((item) => item.teachingPointIds.includes(point.id))
+            .map((item) => item.id),
+        }];
+      });
+  const matchedPoints = matchedClues.map((clue) => clue.pointId);
   const missedPoints = chapter.teachingPoints
     .filter((point) => !matchedPoints.includes(point.id))
     .map((point) => point.id);
 
   if (!normalized || /^[a-z]{8,}$/i.test(normalized) || /^(.)\1{5,}$/.test(normalized) || issue) {
-    return { reasonQuality: 0, matchedPoints, missedPoints };
+    return { reasonQuality: 0, matchedPoints, missedPoints, matchedClues };
   }
   if (normalized.length < 15 || matchedPoints.length === 0) {
-    return { reasonQuality: 1, matchedPoints, missedPoints };
+    return { reasonQuality: 1, matchedPoints, missedPoints, matchedClues };
   }
-  return { reasonQuality: matchedPoints.length >= 2 ? 3 : 2, matchedPoints, missedPoints };
+  return { reasonQuality: matchedPoints.length >= 2 ? 3 : 2, matchedPoints, missedPoints, matchedClues };
 }
 
 export const AI_FEEDBACK_BOUNDARY = {

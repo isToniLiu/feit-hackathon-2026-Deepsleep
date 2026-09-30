@@ -10,7 +10,7 @@ import { MentorScreen } from "@/components/screens/MentorScreen";
 import { ChapterScreen } from "@/components/screens/ChapterScreen";
 import { DecisionScreen } from "@/components/screens/DecisionScreen";
 import { DebriefScreen } from "@/components/screens/DebriefScreen";
-import { buildFlow, DECISION_ENABLED_CHAPTER_IDS } from "@/lib/flow";
+import { buildFlow, DECISION_ENABLED_CHAPTER_IDS, routeScreenForNode, type AppRouteScreen } from "@/lib/flow";
 import { LocaleProvider, useLocale } from "@/lib/i18n";
 import {
   getLocalizedChapter,
@@ -19,6 +19,32 @@ import {
   type IncidentStatus,
   type RoleId,
 } from "@/lib/story";
+
+const ROLE_IDS: RoleId[] = ["priya", "marcus", "aiko"];
+
+function isRoleId(value: string | null): value is RoleId {
+  return value !== null && ROLE_IDS.includes(value as RoleId);
+}
+
+function isAppRouteScreen(value: string | null): value is AppRouteScreen {
+  return value !== null && ["role-select", "workspace", "dashboard", "briefing", "mentor", "chapter1", "chapter2", "chapter3", "debrief"].includes(value);
+}
+
+function routeIndex(roleId: RoleId, screen: AppRouteScreen): number {
+  const flow = buildFlow(roleId);
+  if (screen === "role-select") return 0;
+  const index = screen === "chapter1" || screen === "chapter2" || screen === "chapter3"
+    ? flow.findIndex((node) => node.type === "chapter" && node.chapterId === screen)
+    : flow.findIndex((node) => node.type === screen);
+  return index >= 0 ? index : 0;
+}
+
+function writeAppRoute(roleId: RoleId | null, screen: AppRouteScreen): void {
+  const params = new URLSearchParams();
+  if (roleId) params.set("role", roleId);
+  params.set("screen", screen);
+  window.history.replaceState(null, "", `${window.location.pathname}?${params.toString()}`);
+}
 
 export default function Home() {
   return <LocaleProvider><HomeContent /></LocaleProvider>;
@@ -42,7 +68,22 @@ function HomeContent() {
       const saved = sessionStorage.getItem("cyberstage-session");
       const params = new URLSearchParams(window.location.search);
       const start = params.get("start");
-      if (saved && !start) {
+      const routeRole = isRoleId(params.get("role")) ? params.get("role") as RoleId : null;
+      const routeScreen = isAppRouteScreen(params.get("screen")) ? params.get("screen") as AppRouteScreen : null;
+      if (routeScreen || routeRole || start) {
+        const selectedRouteRole = routeScreen === "role-select" || start === "roleSelect"
+          ? null
+          : routeRole ?? (isRoleId(start) ? start : "priya");
+        const selectedRouteScreen = routeScreen
+          ?? (start === "roleSelect" ? "role-select" : start === "dashboard" ? "dashboard" : start === "briefing" ? "briefing" : start === "debrief" ? "debrief" : start?.startsWith("chapter") && isAppRouteScreen(start) ? start : selectedRouteRole ? "workspace" : "role-select");
+        const targetIndex = selectedRouteRole && selectedRouteScreen !== "role-select"
+          ? routeIndex(selectedRouteRole, selectedRouteScreen)
+          : 0;
+        queueMicrotask(() => {
+          setSelectedRole(selectedRouteRole);
+          setIndex(targetIndex);
+        });
+      } else if (saved) {
         const parsed = JSON.parse(saved) as Partial<{ selectedRole: RoleId | null; index: number; answers: Record<string, DecisionResult>; evidence: EvidenceItem[]; incidentStatus: IncidentStatus }>;
         queueMicrotask(() => {
           if (parsed.selectedRole) setSelectedRole(parsed.selectedRole);
@@ -50,14 +91,6 @@ function HomeContent() {
           if (parsed.evidence) setEvidence(parsed.evidence);
           if (parsed.incidentStatus) setIncidentStatus(parsed.incidentStatus);
           if (typeof parsed.index === "number") setIndex(parsed.index);
-        });
-      } else if (start) {
-        const role = ["priya", "marcus", "aiko"].includes(start) ? start as RoleId : "priya" as RoleId;
-        const targetFlow = buildFlow(role);
-        const targetIndex = start === "debrief" ? targetFlow.findIndex((node) => node.type === "debrief") : start === "dashboard" ? targetFlow.findIndex((node) => node.type === "dashboard") : start === "briefing" ? targetFlow.findIndex((node) => node.type === "briefing") : start.startsWith("chapter") ? targetFlow.findIndex((node) => node.type === "chapter" && node.chapterId === start) : start === "roleSelect" ? 0 : 1;
-        queueMicrotask(() => {
-          setSelectedRole(start === "roleSelect" ? null : role);
-          setIndex(start === "roleSelect" ? 0 : targetIndex >= 0 ? targetIndex : 1);
         });
       }
     } catch {
@@ -144,6 +177,11 @@ function HomeContent() {
     if (!hydrated) return;
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   }, [hydrated, index, selectedRole]);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    writeAppRoute(selectedRole, routeScreenForNode(node));
+  }, [hydrated, index, selectedRole, node]);
 
   return (
     <div className={isDecisionScreen ? "flex min-h-[100dvh] flex-col overflow-x-hidden lg:h-[100dvh] lg:min-h-0 lg:overflow-hidden" : "flex min-h-[100dvh] flex-col"}>
