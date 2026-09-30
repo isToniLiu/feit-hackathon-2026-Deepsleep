@@ -4,13 +4,13 @@
 > Claude Code默认认 `CLAUDE.md`，但本仓库的 `CLAUDE.md` 只是一个指向本文件的指针，内容以这里为准，避免两份文件维护出现不一致。
 > 如果你用的AI工具都不认识这两个文件名（比如网页版聊天机器人、没有仓库读取能力的工具），请在每次新session开始时，手动把本文件、README.md 的内容贴给它，或者按 README.md 最上方的"Kickoff Prompt"操作。
 > 团队成员开始一个任务时，只需要描述"任务目标 + 验收标准"，不需要重复贴技术栈/规范——AI会自己参考本文件。
-> 详细的团队协作流程（时间表、角色分工、Git规范、提交物清单等）见 [`HANDBOOK.md`](./HANDBOOK.md)，本文件是技术/AI协作部分的唯一权威版本。
+> 详细的团队协作流程（时间表、角色分工、Git规范、提交物清单等）见 [`docs/team/HANDBOOK.md`](./docs/team/HANDBOOK.md)，本文件是技术/AI协作部分的唯一权威版本。
 
 ## 项目背景
 
 2026 FEIT Hackathon Festival，队伍 Deepsleep，3天极限开发赛。
 赛题：Untapped Talent Problem Statement ——「Engineering the Future of Learning」（Future Work主题）
-项目名 / 一句话简介：工作代号「DDL Lockdown」——面向零基础网络安全学习者的情景决策式模拟游戏。玩家扮演软件公司Northlight Digital的实习生，公司自研Canvas类平台「EduFlow」今晚遭遇攻击，玩家轮转协助三位不同岗位同事处理三类真实威胁（3篇章结构），AI读取玩家自己写下的判断理由并生成个性化教练反馈。完整背景见 [`PRD.md`](./PRD.md) 第1节。
+项目名 / 一句话简介：工作代号「DDL Lockdown」——面向零基础网络安全学习者的情景决策式模拟游戏。玩家扮演软件公司Northlight Digital的实习生，在IR-247事故中选择一个岗位作为调查入口，进入对应的系统、线索和威胁场景；完成一次岗位视角后，可以重开案件探索另外两个入口。AI读取玩家自己写下的判断理由和行动历史，生成个性化教练反馈。完整背景见 [`docs/product/PRD.md`](./docs/product/PRD.md) 第1节。
 确定只做软件项目，不做硬件（3天时间有限）。
 
 ## 什么该交给AI，什么必须人工把关
@@ -25,14 +25,14 @@
 - 仓库结构：单仓库（monorepo），前后端放在同一个仓库里
 - API统一响应格式：所有接口返回 `{ success: boolean, data: any, error: string | null }`
 - 命名规范：API路由用 kebab-case（如 `/api/user-profile`），变量/函数用 camelCase
-- 环境变量与密钥：一律放 `.env`，禁止硬编码进代码，`.env` 不提交仓库（已在 `.gitignore`）
+- 环境变量与密钥：本地放 `.env.local`，线上放 Vercel 项目设置里的 Environment Variables；禁止硬编码进代码，`.env*` 不提交仓库（已在 `.gitignore`）
 - 错误处理：所有接口必须有 try/catch 或等价的错误捕获，不允许裸抛异常给前端
 
 ## 技术栈（选题已定，以下为当前方案）
 
 - 前端框架：**Next.js（React）+ TypeScript + Tailwind CSS**
 - 后端方案：**Next.js API Routes**（单体应用，暂不需要独立后端服务）
-- 数据 / AI能力：**Claude API 或 OpenAI API**（二选一，用于生成AI教练个性化反馈及结局综合分析，调用时需把「当前剧情节点上下文 + 玩家选项 + 玩家输入的理由」一起打包进prompt）；剧情内容为本地JSON静态数据，团队原创设计，不依赖外部数据集/第三方API
+- 数据 / AI能力：**OpenAI API（当前选定 gpt-4o-mini）**，用于生成AI教练个性化反馈；调用时会把「当前剧情节点上下文 + 玩家选项 + 玩家行动历史 + 玩家输入的理由」一起打包进prompt，接口保留本地兜底文案；剧情内容为本地JSON静态数据，团队原创设计，不依赖外部数据集/第三方API
 - 状态管理：React内置 `useState`/`useReducer` 即可，剧情节点少，不需要引入额外状态管理库
 - 持久化：MVP阶段不需要数据库、不需要登录，游戏状态存在浏览器内存里即可
 
