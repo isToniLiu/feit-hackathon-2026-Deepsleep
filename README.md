@@ -8,6 +8,8 @@ Built for the FEIT Hackathon 2026 by Team Deepsleep, for the Untapped Talent cha
 
 **Live demo:** <https://cyberstage.vercel.app/> (English by default, one-click switch to Chinese in the top bar)
 
+**Demo video:** [Watch the walkthrough (MP4)](https://cyberstage-demo-video.vercel.app/output/CyberStage-Demo.mp4)
+
 ---
 
 ## The idea in one minute
